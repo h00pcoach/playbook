@@ -20,7 +20,9 @@
 	// Bind parameters
 	$st->execute();
 	$settings = $st->fetch();
-	$conn = null;
+  $conn = null;
+  
+  include("../pay/pay_express.php")
 ?>
 
 <!DOCTYPE HTML>
@@ -49,10 +51,15 @@
 		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
 		<script type="text/javascript">
 			$(function(){
-				$('#payment_btn').click(function(){
-					location.href = '../pay/pay.php?uid=<?=$uid?>&affiliate=<?=$affiliate?>&payment_type='+$('input[name=payment_type]:checked').val();
-					return false;
-				})
+        
+        // $('#paypal-button').click(function() {
+        //   var payment_type = $('input[name=payment_type]:checked').val()
+        //   console.log(`payment_type: ${payment_type}`);
+        // })
+				// $('#payment_btn').click(function(){
+				// 	location.href = '../pay/pay.php?uid=<?=$uid?>&affiliate=<?=$affiliate?>&payment_type='+$('input[name=payment_type]:checked').val();
+				// 	return false;
+				// })
 			})
 		</script>
 	</head>
@@ -98,7 +105,9 @@
 						<input type="radio" name="payment_type" value="yearly" checked>Yearly
 						<input type="radio" name="payment_type" value="monthly">Monthly
 					</div>
-					<a href="#" id="payment_btn" class="button big scrolly">Upgrade Now</a>
+					<!-- <a href="#" id="payment_btn" class="button big scrolly">Upgrade Now</a> -->
+          <div id="paypal-button">Upgrade Now</div>
+
 					<br>
 					<div>
 						<a href="../play.php"><u><i>Later</i></u></a> | Back to <a href="https://www.hoopcoach.org">HoopCoach.org</a>
