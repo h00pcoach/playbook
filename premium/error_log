@@ -1,0 +1,15 @@
+[10-Apr-2016 18:42:40 UTC] PHP Warning:  mysql_connect(): Can't connect to local MySQL server through socket '/var/lib/mysql/mysql.sock' (111) in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[09-Nov-2016 21:37:29 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[13-Dec-2016 09:58:23 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[13-Dec-2016 11:46:54 UTC] PHP Warning:  mysql_connect(): Can't connect to local MySQL server through socket '/var/lib/mysql/mysql.sock' (2) in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[05-Mar-2017 04:22:37 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[19-Mar-2017 03:27:51 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[22-Mar-2017 22:12:11 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[22-Mar-2017 22:34:38 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[22-Mar-2017 23:23:12 UTC] PHP Warning:  mysql_connect(): Can't connect to local MySQL server through socket '/var/lib/mysql/mysql.sock' (2) in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[17-Apr-2017 15:15:44 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[17-Apr-2017 15:31:16 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[17-Apr-2017 17:25:16 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[03-May-2017 21:25:44 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[02-Nov-2017 15:05:55 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
+[02-Nov-2017 15:14:28 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6

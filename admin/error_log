@@ -1,0 +1,1 @@
+[02-May-2017 21:10:41 UTC] PHP Warning:  mysql_connect(): Too many connections in /home/hoopcoachcom/public_html/hoopcoach.org/playbook/mydb.php on line 6
