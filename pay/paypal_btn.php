@@ -1,4 +1,22 @@
-<?php include("./pay/credentials.php") ?>
+<?php 
+  // ob_start();
+	// include '../mydb.php';
+	// require('./mydb_pdo.php');
+  require('./ChromePhp.php');
+  include("./pay/credentials.php");
+
+  // Initialize PDO
+	$conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
+	$conn->exec("set names utf8");
+
+	$sql = "SELECT * FROM settings";
+	$st = $conn->prepare( $sql );
+
+	// Bind parameters
+	$st->execute();
+	$settings = $st->fetch();
+  $conn = null;
+?>
 <div id="paypal-button"></div>
 <script src="https://www.paypalobjects.com/api/checkout.js"></script>
 <script>

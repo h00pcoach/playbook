@@ -1052,7 +1052,6 @@
 
 				<div class="col-sm-12">
 					<div class="pay_box" style="margin-top:10px;">
-
 			          	<?php if(isset($_SESSION['user_id']) && $result['paid']==0): ?>
 				          <div style="font-weight:bold; font-size:135%; padding-left:5px; color:#0000ff; text-align:center;">Get Playbook Pro!</div>
 				          <div style="text-align:center;">
