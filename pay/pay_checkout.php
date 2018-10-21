@@ -23,162 +23,91 @@ $conn = null;
 ?>
 <body>
   <!-- <div id="paypal-button-container"></div> -->
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
   <script src="https://www.paypalobjects.com/api/checkout.js"></script>
   <script>
-  // Render the PayPal button
-  paypal.Button.render({
-    // Set your environment
-    env: 'sandbox', // sandbox | production
 
-    // Specify the style of the button
-    style: {
-      layout: 'vertical',  // horizontal | vertical
-      size:   'medium',    // medium | large | responsive
-      shape:  'rect',      // pill | rect
-      color:  'gold'       // gold | blue | silver | white | black
-    },
-    
-    // Specify allowed and disallowed funding sources
-    //
-    // Options:
-    // - paypal.FUNDING.CARD
-    // - paypal.FUNDING.CREDIT
-    // - paypal.FUNDING.ELV
-    funding: {
-      allowed: [
-        paypal.FUNDING.CARD,
-        paypal.FUNDING.CREDIT
-      ],
-      disallowed: []
-    },
+    // Render the PayPal button
+    paypal.Button.render({
+      
+      // Set your environment
+      env: 'sandbox', // sandbox | production
 
-    // PayPal Client IDs - replace with your own
-    // Create a PayPal app: https://developer.paypal.com/developer/applications/create
-    client: {
-      sandbox: "<?= $client_id_sand ?>",
-      production: "<?= $client_id_prod ?>"
-    },
+      // Specify the style of the button
+      style: {
+        layout: 'vertical',  // horizontal | vertical
+        size:   'medium',    // medium | large | responsive
+        shape:  'rect',      // pill | rect
+        color:  'gold'       // gold | blue | silver | white | black
+      },
+      
+      // Specify allowed and disallowed funding sources
+      //
+      // Options:
+      // - paypal.FUNDING.CARD
+      // - paypal.FUNDING.CREDIT
+      // - paypal.FUNDING.ELV
+      funding: {
+        allowed: [
+          paypal.FUNDING.CARD,
+          paypal.FUNDING.CREDIT
+        ],
+        disallowed: []
+      },
 
-    payment: function (data, actions) {
-      payment_type = $('input[name=payment_type]:checked').val();
-      payment_amt = payment_type == "monthly" ? "<?= $settings['monthly_amount'] ?>" : "<?= $settings['yearly_amount'] ?>";
-      console.log(`payment_amt ${payment_amt}`);
-      console.log(`payment_type ${payment_type}`);
-      return actions.payment.create({
-        payment: {
-          transactions: [
-            {
-              amount: {
-                total: payment_amt,
-                currency: 'USD'
-              },
-              description: 'Hoop Coach Playbook Pro',
-              item_list: {
-              items: [
-                {
-                  name: "Playbook Pro",
-                  price: payment_amt,
-                  currency: "USD",
-                  quantity: "1"
+      // PayPal Client IDs - replace with your own
+      // Create a PayPal app: https://developer.paypal.com/developer/applications/create
+      client: {
+        sandbox: "<?= $client_id_sand ?>",
+        production: "<?= $client_id_prod ?>"
+      },
+      payment: function (data, actions) {
+        var payment_type = $('input[name=payment_type]:checked').val();
+        var payment_amt = payment_type == "monthly" ? "<?= $settings['monthly_amount'] ?>" : "<?= $settings['yearly_amount'] ?>";
+        console.log(`actions? ${actions}`);
+        return actions.payment.create({
+          payment: {
+            transactions: [
+              {
+                amount: {
+                  total: payment_amt,
+                  currency: 'USD'
+                },
+                description: 'Hoop Coach Playbook Pro',
+                item_list: {
+                  items: [
+                    {
+                      name: `Playbook Pro - ${payment_type}`,
+                      description: `${payment_type} subscription`,
+                      price: payment_amt,
+                      currency: "USD",
+                      quantity: "1"
+                    }
+                  ]
                 }
-              ],
+              }
+            ]
+          },
+          experience: {
+            input_fields: {
+              no_shipping: 1
             }
-          ]
-        },
-        experience: {
-          input_fields: {
-            no_shipping: 1
           }
-        }
-      });
-    },
-    onAuthorize: function (data, actions) {
-      return actions.payment.execute()
-        .then(function () {
-          // TODO: Insert data into the database
-          // TODO: Show Success page
-          console.log(`data: ${data}`);
-          console.log(`actions: ${actions}`);
-          // window.alert('Payment Complete!');
         });
-    }
-  }, '#paypal-button-container');
+      },
+      onAuthorize: function (data, actions) {
+        return actions.payment.execute()
+          .then(function () {
+            // TODO: Insert data into the database
+            // TODO: Show Success page
+            console.log(`data: ${data}`);
+            console.log(`actions: ${actions}`);
+            // window.alert('Payment Complete!');
+          });
+      }
+    }, '#paypal-button-container');
   </script>
 </body>
-
-<!-- paypal.Button.render({
-    // Set your environment
-    env: 'sandbox', // sandbox | production
-
-    // Specify the style of the button
-    style: {
-      layout: 'vertical',  // horizontal | vertical
-      size:   'medium',    // medium | large | responsive
-      shape:  'rect',      // pill | rect
-      color:  'gold'       // gold | blue | silver | white | black
-    },
-    
-    // Specify allowed and disallowed funding sources
-    //
-    // Options:
-    // - paypal.FUNDING.CARD
-    // - paypal.FUNDING.CREDIT
-    // - paypal.FUNDING.ELV
-    funding: {
-      allowed: [
-        paypal.FUNDING.CARD,
-        paypal.FUNDING.CREDIT
-      ],
-      disallowed: []
-    },
-
-    // PayPal Client IDs - replace with your own
-    // Create a PayPal app: https://developer.paypal.com/developer/applications/create
-    client: {
-      sandbox: "<?= $client_id_sand ?>",
-      production: "<?= $client_id_prod ?>"
-    },
-
-    payment: function (data, actions) {
-      payment_type = $('input[name=payment_type]:checked').val();
-      payment_amt = payment_type == "monthly" ? "<?= $settings['monthly_amount'] ?>" : "<?= $settings['yearly_amount'] ?>";
-      console.log(`payment_amt ${payment_amt}`);
-      console.log(`payment_type ${payment_type}`);
-      return actions.payment.create({
-        payment: {
-          transactions: [
-            {
-              amount: {
-                total: `${payment_amt}`,
-                currency: 'USD'
-              },
-              description: 'Hoop Coach Playbook Pro',
-              item_list: [
-                {
-                  name: `Playbook Pro`,
-                  description: `Playbook Pro ${payment_type} subscription`,
-                  price: `${payment_amt}`
-                }
-              ]
-            }
-          ],
-          redirect_urls: {
-            // return_url: "https://www.hoopcoach.org/playbook/",
-            // cancel_url: "https://www.hoopcoach.org/playbook/pay/cancel.php"
-            // TODO: CHANGE TO PRODUCTION BEFORE UPLOADING
-            return_url: "http://pb.local:8888",
-            cancel_url: "http://pb.local:8888/pay/cancel.php"
-          }
-        }
-      });
-    },
-    onAuthorize: function (data, actions) {
-      return actions.payment.execute()
-        .then(function () {
-          // TODO: Insert data into the database
-          console.log(`data: ${data}`);
-          console.log(`actions: ${actions}`);
-          window.alert('Payment Complete!');
-        });
-    }
-  }, '#paypal-button-container'); -->

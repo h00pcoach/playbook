@@ -22,7 +22,8 @@ $st->execute();
 $settings = $st->fetch();
 $conn = null;
 
-include("../pay/pay_checkout.php")
+// include("../pay/pay_checkout.php")
+include("../pay/pay_recurring.php")
 ?>
 
 <!DOCTYPE HTML>
@@ -38,35 +39,7 @@ include("../pay/pay_checkout.php")
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
 		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
-		<script src="js/jquery.min.js"></script>
-		<script src="js/jquery.scrolly.min.js"></script>
-		<script src="js/skel.min.js"></script>
-		<script src="js/init.js"></script>
-		<noscript>
-			<link rel="stylesheet" href="css/skel.css" />
-			<link rel="stylesheet" href="css/style.css" />
-			<link rel="stylesheet" href="css/style-desktop.css" />
-		</noscript>
-		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
-		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
-		<script type="text/javascript">
-			$(function(){
-        $("input[name='payment_type']").click(function() 
-        {
-            var pay_type = this.value;
-            console.log(`pay_type: ${pay_type}`);
-        });
-
-        // $('#paypal-button').click(function() {
-        //   var payment_type = $('input[name=payment_type]:checked').val()
-        //   console.log(`payment_type: ${payment_type}`);
-        // })
-				// $('#payment_btn').click(function(){
-				// 	location.href = '../pay/pay.php?uid=<?= $uid ?>&affiliate=<?= $affiliate ?>&payment_type='+$('input[name=payment_type]:checked').val();
-				// 	return false;
-				// })
-			})
-		</script>
+		
 	</head>
 	<body>
 		<!-- Nav -->
@@ -126,6 +99,36 @@ include("../pay/pay_checkout.php")
 				<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
 			</ul> -->
 		</footer>
+
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.scrolly.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/init.js"></script>
+		<noscript>
+			<link rel="stylesheet" href="css/skel.css" />
+			<link rel="stylesheet" href="css/style.css" />
+			<link rel="stylesheet" href="css/style-desktop.css" />
+		</noscript>
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
+		<script type="text/javascript">
+			// $(function(){
+        // $("input[name='payment_type']").click(function() 
+        // {
+        //     var pay_type = this.value;
+        //     console.log(`pay_type: ${pay_type}`);
+        // });
+
+        // $('#paypal-button').click(function() {
+        //   var payment_type = $('input[name=payment_type]:checked').val()
+        //   console.log(`payment_type: ${payment_type}`);
+        // })
+				// $('#payment_btn').click(function(){
+				// 	location.href = '../pay/pay.php?uid=<?= $uid ?>&affiliate=<?= $affiliate ?>&payment_type='+$('input[name=payment_type]:checked').val();
+				// 	return false;
+				// })
+			// })
+		</script>
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
