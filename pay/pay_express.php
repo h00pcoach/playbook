@@ -24,7 +24,7 @@
     braintree: braintree,
     client: {
       production: 'CLIENT_TOKEN_FROM_SERVER',
-      sandbox: 'EXPRESS_TOKEN_SAND'
+      sandbox: <?= EXPRESS_TOKEN_SAND ?>
     },
     env: 'sandbox', // Or 'sandbox'
     commit: true, // This will add the transaction amount to the PayPal button
@@ -32,7 +32,7 @@
     payment: function (data, actions) {
       return actions.braintree.create({
         flow: 'checkout', // Required
-        amount: <?= $_SESSION['payment_amt'] ?>, // Required
+        amount: <?= isset($_SESSION['payment_amt']) ? $_SESSION['payment_amt'] : '5.00' ?>, // Required
         currency: 'USD', // Required
         enableShippingAddress: false,
       });

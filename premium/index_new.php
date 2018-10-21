@@ -22,7 +22,7 @@
 	$settings = $st->fetch();
   $conn = null;
   
-  include("../pay/pay_express.php")
+  include("../pay/pay_braintree.php")
 ?>
 
 <!DOCTYPE HTML>
@@ -51,7 +51,12 @@
 		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
 		<script type="text/javascript">
 			$(function(){
-        
+        $("input[name='payment_type']").click(function() 
+        {
+            var pay_type = this.value;
+            console.log(`pay_type: ${pay_type}`);
+        });
+
         // $('#paypal-button').click(function() {
         //   var payment_type = $('input[name=payment_type]:checked').val()
         //   console.log(`payment_type: ${payment_type}`);
@@ -105,8 +110,8 @@
 						<input type="radio" name="payment_type" value="yearly" checked>Yearly
 						<input type="radio" name="payment_type" value="monthly">Monthly
 					</div>
-					<!-- <a href="#" id="payment_btn" class="button big scrolly">Upgrade Now</a> -->
-          <div id="paypal-button">Upgrade Now</div>
+					<a href="#" id="submit-button" class="button big scrolly">Upgrade Now</a>
+          <!-- <div id="paypal-button">Upgrade Now</div> -->
 
 					<br>
 					<div>
