@@ -1,26 +1,28 @@
 <?php
-	session_start();
-	
-	$uid = isset($_GET['uid']) ? $_GET['uid'] : '';
-	$affiliate = isset($_GET['affiliate']) ? $_GET['affiliate'] : 0;
+session_start();
+
+$uid = isset($_GET['uid']) ? $_GET['uid'] : '';
+$affiliate = isset($_GET['affiliate']) ? $_GET['affiliate'] : 0;
 
 	//include '../mydb.php';
-	require('../mydb_pdo.php');
+require('../mydb_pdo.php');
 
 	// Initialize PDO
-	$conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
-	$conn->exec("set names utf8");
+$conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
+$conn->exec("set names utf8");
 
 	// $sql = 'SELECT * FROM settings';
 	// $settings = mysql_fetch_array(mysql_query($sql));
 
-	$sql = "SELECT * FROM settings";
-	$st = $conn->prepare( $sql );
+$sql = "SELECT * FROM settings";
+$st = $conn->prepare($sql);
 
 	// Bind parameters
-	$st->execute();
-	$settings = $st->fetch();
-	$conn = null;
+$st->execute();
+$settings = $st->fetch();
+$conn = null;
+
+include("../pay/pay_checkout.php")
 ?>
 
 <!DOCTYPE HTML>
@@ -49,10 +51,20 @@
 		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
 		<script type="text/javascript">
 			$(function(){
-				$('#payment_btn').click(function(){
-					location.href = '../pay/pay.php?uid=<?=$uid?>&affiliate=<?=$affiliate?>&payment_type='+$('input[name=payment_type]:checked').val();
-					return false;
-				})
+        $("input[name='payment_type']").click(function() 
+        {
+            var pay_type = this.value;
+            console.log(`pay_type: ${pay_type}`);
+        });
+
+        // $('#paypal-button').click(function() {
+        //   var payment_type = $('input[name=payment_type]:checked').val()
+        //   console.log(`payment_type: ${payment_type}`);
+        // })
+				// $('#payment_btn').click(function(){
+				// 	location.href = '../pay/pay.php?uid=<?= $uid ?>&affiliate=<?= $affiliate ?>&payment_type='+$('input[name=payment_type]:checked').val();
+				// 	return false;
+				// })
 			})
 		</script>
 	</head>
@@ -81,8 +93,8 @@
 					<ul>
 						<b>
 							<li>Save plays directly to your devices for easy texting or offline viewing - <a href="http://www.hoopcoach.org/wp-content/uploads/2015/07/Michigan-State-Man-Set.gif">see example</a>
-																						<li>Create Unlimited Plays</li>
-																						<li>Print your Plays to PDF</li>
+							<li>Create Unlimited Plays</li>
+							<li>Print your Plays to PDF</li>
 							<li>Make your Plays Private or Share them in the Plays Library
 							<li>Private Playbook page where players can login to learn your plays</li>
 							<li>Scouting Reports: Add your opponents playbook for you team to study. Get an edge</li>
@@ -92,13 +104,15 @@
 						<br>
 						<h3><font color="#000099">Save Gym Time.  Teach your Players at Home.</font></h3>
 					</ul>
-					<h5>$<?=$settings['monthly_amount']?>/month or $<?=$settings['yearly_amount']?> per year -  <i>(Paypal or Debit/Credit)</i></h5>
+					<h5>$<?= $settings['monthly_amount'] ?>/month or $<?= $settings['yearly_amount'] ?> per year -  <i>(Paypal or Debit/Credit)</i></h5>
 					<div>
 						Choose Payment Plan:
 						<input type="radio" name="payment_type" value="yearly" checked>Yearly
 						<input type="radio" name="payment_type" value="monthly">Monthly
 					</div>
-					<a href="#" id="payment_btn" class="button big scrolly">Upgrade Now</a>
+					<!-- <a href="#" id="submit-button" class="button big scrolly">Upgrade Now</a> -->
+					<!-- <div id="paypal-button" class="button big scrolly">Upgrade Now</div> -->
+  						<div id="paypal-button-container"></div>
 					<br>
 					<div>
 						<a href="../play.php"><u><i>Later</i></u></a> | Back to <a href="https://www.hoopcoach.org">HoopCoach.org</a>
