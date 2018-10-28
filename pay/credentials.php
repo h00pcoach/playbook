@@ -9,4 +9,10 @@ define('PAYPAL_SECRET_PROD', 'EEu3e6FQiBxSMo9-d562pPD65JRPBAJl1JLzeS29G-pZTOnI4I
 
 define('EXPRESS_ACCOUNT_SAND', 'andy_dold-facilitator@comcast.net');
 define('EXPRESS_TOKEN_SAND', 'access_token$sandbox$q4k7bpjzxf5t2m5q$f39f7111fc3b24774f54488ba5968a7e');
+
+define('YEARLY_PAY_PLAY_SAND', "P-18G006197U856841RXQYJP7Y");
+define('MONTHLY_PAY_PLAY_SAND', "P-1UF4317244044801CXQZKVHA");
+
+define('YEARLY_PAY_PLAY_PROD', "");
+define('MONTHLY_PAY_PLAY_PROD', "");
 ?>

@@ -4,25 +4,21 @@ session_start();
 $uid = isset($_GET['uid']) ? $_GET['uid'] : '';
 $affiliate = isset($_GET['affiliate']) ? $_GET['affiliate'] : 0;
 
-	//include '../mydb.php';
 require('../mydb_pdo.php');
 
-	// Initialize PDO
+// Initialize PDO
 $conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
 $conn->exec("set names utf8");
-
-	// $sql = 'SELECT * FROM settings';
-	// $settings = mysql_fetch_array(mysql_query($sql));
 
 $sql = "SELECT * FROM settings";
 $st = $conn->prepare($sql);
 
-	// Bind parameters
+// Bind parameters
 $st->execute();
 $settings = $st->fetch();
 $conn = null;
 
-// include("../pay/pay_checkout.php")
+// include("../pay/pay_checkout.php")/*  */
 include("../pay/pay_recurring.php")
 ?>
 

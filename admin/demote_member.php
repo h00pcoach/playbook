@@ -1,6 +1,6 @@
 <?php
 	require('../mydb_pdo.php');
-    //require('../ChromePhp.php');
+    // require('../ChromePhp.php');
 
 	$email = $_POST['email'];
 

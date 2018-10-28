@@ -1,0 +1,27 @@
+{
+  "name": "Hoopcoach Playbook Pro",
+  "description": "Playbook Pro Yearly subscription",
+  "type": "FIXED",
+  "payment_definitions": [{
+    "name": "Yearly Subscription",
+    "type": "REGULAR",
+    "frequency": "YEAR",
+    "frequency_interval": "1",
+    "amount": {
+      "value": "39",
+      "currency": "USD"
+    },
+    "cycles": "1"
+  }],
+  "merchant_preferences": {
+    "setup_fee": {
+      "value": "1",
+      "currency": "USD"
+    },
+    "return_url": "http://pb.local:8888/pay/success.php",
+    "cancel_url": "http://pb.local:8888/pay/cancel.php",
+    "auto_bill_amount": "YES",
+    "initial_fail_amount_action": "CONTINUE",
+    "max_fail_attempts": "0"
+  }
+}
