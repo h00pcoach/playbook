@@ -1,7 +1,5 @@
 <?php 
 
-require('../ChromePhp.php');
-
 use PayPal\Api\ChargeModel;
 use PayPal\Api\Currency;
 use PayPal\Api\MerchantPreferences;
