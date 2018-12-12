@@ -1,5 +1,6 @@
 {
   "require": {
-    "paypal/rest-api-sdk-php": "^1.13"
+    "paypal/rest-api-sdk-php": "^1.13",
+    "braintree/braintree_php": "3.37.0"
   }
 }
