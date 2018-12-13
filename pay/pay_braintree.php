@@ -13,10 +13,19 @@ $st = $conn->prepare($sql);
 	// Bind parameters
 $st->execute();
 $settings = $st->fetch();
-$conn = null;
+// $conn = null;
 
 if (isset($_GET['uid'])) {
   $user_id = $_GET['uid'];
+  $affiliate = $_GET['affiliate'];
+
+  $sql = "SELECT * from users WHERE id = :id";
+  $st = $conn->prepare($sql);
+
+	    // Bind parameters
+  $st->bindValue(":id", $user_id, PDO::PARAM_INT);
+  $st->execute();
+  $user = $st->fetch();
 
   $debug = true;
 
@@ -39,21 +48,57 @@ if (isset($_GET['uid'])) {
   ]);
 
   $clientToken = $gateway->clientToken()->generate();
+  $plan_id = $_GET["payment_type"] == "monthly" ? 'pb_monthly' : 'pb_yearly';
 
   // TODO: 
   //  - Determine wether request is for yearly or monthly subscription
   //  - Set the planId (pb_monthly, pb_yearly) based on above
-  //  - 
+  //  - Store token in DB
+  //  - Store pay_id in DB
+  if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_method_token'])) {
+    // $result = $gateway->customer()->create([
+    //   'firstName' => $_POST['first_name'],
+    //   'lastName' => $_POST['last_name'],
+    //   'email' => $_POST['email'],
+    //   'phone' => $_POST['phone']
+    // ]);
 
-  $result = $gateway->subscription()->create([
-    'paymentMethodToken' => 'the_token',
-    'planId' => 'silver_plan_gbp',
-    'merchantAccountId' => $merchantId
-  ]);
+    $result = $gateway->customer()->create([
+      'firstName' => $_POST['first_name'],
+      'lastName' => $_POST['last_name'],
+      'email' => $_POST['email'],
+      'phone' => $_POST['phone'],
+      'paymentMethodNonce' => $_POST['pay_method_token']
+    ]);
+    if ($result->success) {
+      echo ($result->customer->id);
+      echo ($result->customer->paymentMethods[0]->token);
+    } else {
+      foreach ($result->errors->deepAll() as $error) {
+        echo ($error->code . ": " . $error->message . "\n");
+      }
+    }
+    $sql = "UPDATE users SET pay_id = :pay_id WHERE id = :id";
+    $st = $conn->prepare($sql);
+    $st->bindValue(":pay_id", $result->customer->id, PDO::PARAM_INT);
+    $st->bindValue(":id", $user_id, PDO::PARAM_INT);
+    $st->execute();
+    $conn = null;
+
+    $result = $gateway->subscription()->create([
+      'paymentMethodToken' => $_POST['pay_method_token'],
+      'planId' => $plan_id,
+      'merchantAccountId' => $merchantId
+    ]);
+  }
 
 } else {
   header('Location: login.php');
 }
+
+// CLEANUP
+$conn = null;
+
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -63,10 +108,75 @@ if (isset($_GET['uid'])) {
 <head>
   <meta charset="utf-8">
   <script src="https://js.braintreegateway.com/web/dropin/1.14.1/js/dropin.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+  <style type="text/css">
+    .form-control{
+      margin-top:10px;
+    }
+  </style>
 </head>
 <body>
-  <div id="dropin-container"></div>
-  <button id="submit-button">Request payment method</button>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-offset-3 col-sm-6">
+        <div class="panel panel-primary" style="margin-top: 150px;">
+          <div class="panel-heading">Card Holder Information</div>
+          <div class="panel-body">
+            <form id="pay-form" method="POST">
+              <div><input type="text" name="first_name" placeholder="Bruce" class="form-control" required></div>
+              <div><input type="text" name="last_name" placeholder="Wayne" class="form-control" required></div>
+              <div><input type="email" name="email" placeholder="Email" class="form-control" required></div>
+              <div><input type="text" name="phone" placeholder="555-555-5555" class="form-control" required></div>
+              <input type="hidden" name="payment_type" value="<?= $plan_id ?>">
+			        <input type="hidden" name="affiliteid" value="<?php echo $affiliate; ?>" />
+
+              <!-- <button id="user-btn" class="btn btn-success" style="margin-top:20px; width:200px;">Payment Method ></button> -->
+              <div id="dropin-container"></div>
+                <button id="submit-button" class="btn btn-success" style="margin-top:20px; width:200px;">Request payment method</button>
+              </div>
+            </form>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="text/javascript" src="../js/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
+  <script type="text/javascript">
+    $(function(){
+      $('form').validate({
+        rules:{
+          name:{
+            required: true,
+
+          },
+          email:{
+            required:true,
+            email:true
+          }
+        }
+      })
+    });
+  
+    $("#pay-form").submit(function( event )
+    {
+
+        console.log('form submit clicked: ', $(this));
+
+        // Stop form from submitting normally
+        event.preventDefault();
+    });
+    // $('#user-btn').click(function() 
+    // {
+    //   console.log(`user-btn clicked`);
+    //   $('.hidden').toggle()
+    // });
+    
+  </script>
+
   <script>
     var button = document.querySelector('#submit-button');
 
@@ -75,9 +185,42 @@ if (isset($_GET['uid'])) {
       container: '#dropin-container'
     }, function (createErr, instance) {
       button.addEventListener('click', function () {
-        instance.requestPaymentMethod(function (err, payload) {
-          console.log(`payload: ${JSON.parse(payload)}`);
+        instance.requestPaymentMethod(function (err, payload) 
+        {
+
+          $("#pay-button").attr('disabled', true)
+          // console.log(JSON.parse(payload));
           // Submit payload.nonce to your server
+
+          // Get some values from elements on the page:
+          var form = $('#pay-form'),
+          last_name = form.find( "input[name='last_name']" ).val(),
+          first_name = form.find( "input[name='first_name']" ).val(),
+          email = form.find( "input[name='email']" ).val(),
+          phone = form.find( "input[name='phone']" ).val(),
+          payment_type = form.find( "input[name='payment_type']" ).val();
+          
+          console.log(`payment_type ${payment_type}`);
+          var url = `../pay/pay_braintree.php?uid=<?= $user_id ?>&affiliate=<?= $affiliate ?>&payment_type=${payment_type}`;
+
+          // Send the data using post
+          var posting = $.post( url, { last_name: last_name, first_name: first_name, email: email, phone: phone, pay_method_token:  payload.nonce} );
+
+          // Put the results in a div
+          posting.done(function( data )
+          {
+              // if data returned no errors
+              if (!data.error)
+              {
+
+              } else {
+
+                  // TODO: Display error message
+                  console.log('ERROR sending paymentForm!', data.error);
+                  $("#pay-button").attr('disabled', false)
+
+              }
+          });
         });
       });
     });

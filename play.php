@@ -51,7 +51,7 @@
 		$st = $conn->prepare( $sql );
 
 	    // Bind parameters
-	    $st->bindValue( ":id", $_SESSION['user_id'], PDO::PARAM_INT );
+	  $st->bindValue( ":id", $_SESSION['user_id'], PDO::PARAM_INT );
 		$st->execute();
 		$result = $st->fetch();
 		// $conn = null;

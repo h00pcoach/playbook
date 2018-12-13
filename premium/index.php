@@ -19,7 +19,7 @@ $settings = $st->fetch();
 $conn = null;
 
 // include("../pay/pay_checkout.php")/*  */
-include("../pay/pay_recurring.php")
+// include("../pay/pay_recurring.php")
 ?>
 
 <!DOCTYPE HTML>
@@ -79,9 +79,9 @@ include("../pay/pay_recurring.php")
 						<input type="radio" name="payment_type" value="yearly" checked>Yearly
 						<input type="radio" name="payment_type" value="monthly">Monthly
 					</div>
-					<!-- <a href="#" id="submit-button" class="button big scrolly">Upgrade Now</a> -->
+					<a href="#" id="submit-button" class="button big scrolly">Upgrade Now</a>
 					<!-- <div id="paypal-button" class="button big scrolly">Upgrade Now</div> -->
-  						<div id="paypal-button-container"></div>
+  						<!-- <div id="paypal-button-container"></div> -->
 					<br>
 					<div>
 						<a href="../play.php"><u><i>Later</i></u></a> | Back to <a href="https://www.hoopcoach.org">HoopCoach.org</a>
@@ -108,22 +108,22 @@ include("../pay/pay_recurring.php")
 		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
 		<script type="text/javascript">
-			// $(function(){
-        // $("input[name='payment_type']").click(function() 
-        // {
-        //     var pay_type = this.value;
-        //     console.log(`pay_type: ${pay_type}`);
-        // });
+			$(function(){
+        $("input[name='payment_type']").click(function() 
+        {
+            var pay_type = this.value;
+            console.log(`pay_type: ${pay_type}`);
+        });
 
-        // $('#paypal-button').click(function() {
+        // $('#submit-button').click(function() {
         //   var payment_type = $('input[name=payment_type]:checked').val()
         //   console.log(`payment_type: ${payment_type}`);
         // })
-				// $('#payment_btn').click(function(){
-				// 	location.href = '../pay/pay.php?uid=<?= $uid ?>&affiliate=<?= $affiliate ?>&payment_type='+$('input[name=payment_type]:checked').val();
-				// 	return false;
-				// })
-			// })
+				$('#submit-button').click(function(){
+					location.href = '../pay/pay_braintree.php?uid=<?= $uid ?>&affiliate=<?= $affiliate ?>&payment_type='+$('input[name=payment_type]:checked').val();
+					return false;
+				})
+			})
 		</script>
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

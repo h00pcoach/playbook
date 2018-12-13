@@ -1,82 +1,77 @@
 <?php
-	session_start();
-	$affiliate = 0;
-	if(isset($_GET['affiliate']) && !empty($_GET['affiliate']))
-	{
-		$affiliate = $_GET['affiliate'];
-	}
-	if($_SERVER['REQUEST_METHOD'] == 'POST')
-	{
-		include('mydb_pdo.php');
+session_start();
+$affiliate = 0;
+if (isset($_GET['affiliate']) && !empty($_GET['affiliate'])) {
+	$affiliate = $_GET['affiliate'];
+}
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	include('mydb_pdo.php');
 
 		// Initialize PDO
-		$conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
-		$conn->exec("set names utf8");
+	$conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
+	$conn->exec("set names utf8");
 
 		// Retrieve posted values
-		$name = $_POST['name'];
-		$email = $_POST['email'];
-		$password = $_POST['password'];
-		$affiliteid = $_POST['affiliteid'];
+	$name = $_POST['name'];
+	$email = $_POST['email'];
+	$password = $_POST['password'];
+	$affiliteid = $_POST['affiliteid'];
 
 		// set affiliate id
-		$_SESSION['affiliate'] = $affiliteid;
+	$_SESSION['affiliate'] = $affiliteid;
 
-		$sql = "SELECT * FROM users WHERE email = :email";
-		$st = $conn->prepare( $sql );
+	$sql = "SELECT * FROM users WHERE email = :email";
+	$st = $conn->prepare($sql);
 
 		// Bind parameters
-		$st->bindValue( ":email", $email, PDO::PARAM_INT );
-		$st->execute();
-		$row = $st->fetch();
+	$st->bindValue(":email", $email, PDO::PARAM_INT);
+	$st->execute();
+	$row = $st->fetch();
 
 		// if user doesn't exist
-		if(!$row)
-		{
+	if (!$row) {
 			// save user
-			$hash = md5($email.$password);
+		$hash = md5($email . $password);
 
 			// $sql = "insert into users(email, pass, encrypted_password) values('{$email}', '{$password}', '{$hash}');";
 			// $status = mysql_query($sql);
 
-			$sql = "INSERT INTO users(email, name, encrypted_password) VALUES(:email, :name, :encrypted_password)";
-			$st = $conn->prepare( $sql );
+		$sql = "INSERT INTO users(email, name, encrypted_password) VALUES(:email, :name, :encrypted_password)";
+		$st = $conn->prepare($sql);
 
 			// Bind parameters
-			$st->bindValue( ":email", $email, PDO::PARAM_STR );
-			$st->bindValue( ":name", $name, PDO::PARAM_STR );
-			$st->bindValue( ":encrypted_password", $hash, PDO::PARAM_STR );
-			$status = $st->execute();
+		$st->bindValue(":email", $email, PDO::PARAM_STR);
+		$st->bindValue(":name", $name, PDO::PARAM_STR);
+		$st->bindValue(":encrypted_password", $hash, PDO::PARAM_STR);
+		$status = $st->execute();
 
-			if($status)
-			{
-				$_SESSION['user_id'] = $conn->lastInsertId();
+		if ($status) {
+			$_SESSION['user_id'] = $conn->lastInsertId();
 
-				echo '<div class="alert alert-success">Registration success</div>';
+			echo '<div class="alert alert-success">Registration success</div>';
 
-				if(!isset($_GET['type']))
-				{
-					echo '<script>alert("Registration success"); location.href="/play.php";</script>';
-
-				} else {
-
-					echo "<script>alert(\"Registration success\"); location.href=\"/premium/index.php?uid={$_SESSION['user_id']}&affiliate={$affiliteid}\";</script>";
-				}
-				return;
+			if (!isset($_GET['type'])) {
+				echo '<script>alert("Registration success"); location.href="/play.php";</script>';
 
 			} else {
 
-				echo '<div class="alert alert-danger">Registration failed.</div>';
+				echo "<script>alert(\"Registration success\"); location.href=\"/premium/index.php?uid={$_SESSION['user_id']}&affiliate={$affiliteid}\";</script>";
 			}
+			return;
 
 		} else {
 
-			echo '<div class="alert alert-danger">Registration failed. The user already exists.</div>';
+			echo '<div class="alert alert-danger">Registration failed.</div>';
 		}
-	}
 
-	$conn = null;
- ?>
+	} else {
+
+		echo '<div class="alert alert-danger">Registration failed. The user already exists.</div>';
+	}
+}
+
+$conn = null;
+?>
 
 <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 
@@ -122,7 +117,7 @@
 						<div><input type="password" name="password" id="password" placeholder="Password" class="form-control" required></div>
 						<div><input type="password" name="confirm_password" placeholder="Confirm Password" class="form-control" required></div>
 			            <input type="hidden" name="affiliteid" value="<?php echo $affiliate; ?>" />
-						<button class="btn btn-success" style="margin-top:20px; width:200px;">Register</button>
+						<button class="btn btn-success" type="submit" style="margin-top:20px; width:200px;">Register</button>
 					</form>
 				</div>
 			</div>
