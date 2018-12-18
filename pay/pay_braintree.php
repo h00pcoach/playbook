@@ -3,7 +3,7 @@ require('../mydb_pdo.php');
 include("../pay/credentials.php");
 require_once '../vendor/braintree/braintree_php/lib/Braintree.php';
 
-  // Initialize PDO
+// Initialize PDO
 $conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
 $conn->exec("set names utf8");
 
