@@ -22,7 +22,7 @@ if (isset($_GET['uid'])) {
   $sql = "SELECT * from users WHERE id = :id";
   $st = $conn->prepare($sql);
 
-	    // Bind parameters
+  // Bind parameters
   $st->bindValue(":id", $user_id, PDO::PARAM_INT);
   $st->execute();
   $user = $st->fetch();
@@ -46,23 +46,14 @@ if (isset($_GET['uid'])) {
     'publicKey' => $publicKey,
     'privateKey' => $privateKey
   ]);
-
+  
+  // TODO:
+  // - Check if client already has a token
+  // - If so, grab token
   $clientToken = $gateway->clientToken()->generate();
   $plan_id = $_GET["payment_type"] == "monthly" ? 'pb_monthly' : 'pb_yearly';
 
-  // TODO: 
-  //  - Determine wether request is for yearly or monthly subscription
-  //  - Set the planId (pb_monthly, pb_yearly) based on above
-  //  - Store token in DB
-  //  - Store pay_id in DB
   if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_method_token'])) {
-    // $result = $gateway->customer()->create([
-    //   'firstName' => $_POST['first_name'],
-    //   'lastName' => $_POST['last_name'],
-    //   'email' => $_POST['email'],
-    //   'phone' => $_POST['phone']
-    // ]);
-
     $result = $gateway->customer()->create([
       'firstName' => $_POST['first_name'],
       'lastName' => $_POST['last_name'],
@@ -70,26 +61,30 @@ if (isset($_GET['uid'])) {
       'phone' => $_POST['phone'],
       'paymentMethodNonce' => $_POST['pay_method_token']
     ]);
+
     if ($result->success) {
-      echo ($result->customer->id);
-      echo ($result->customer->paymentMethods[0]->token);
+
+      $sql = "UPDATE users SET pay_id = :pay_id, pay_token = :pay_token WHERE id = :id";
+      $st = $conn->prepare($sql);
+      $st->bindValue(":pay_id", $result->customer->id, PDO::PARAM_INT);
+      $st->bindValue(":pay_token", $result->customer->paymentMethods[0]->token, PDO::PARAM_INT);
+      $st->bindValue(":id", $user_id, PDO::PARAM_INT);
+      $st->execute();
+      $conn = null;
+
+      // TODO:
+      // - Create a new subscription
+      $subscription = $gateway->subscription()->create([
+        'paymentMethodToken' => $_POST['pay_method_token'],
+        'planId' => $plan_id
+      ]);
+
     } else {
       foreach ($result->errors->deepAll() as $error) {
         echo ($error->code . ": " . $error->message . "\n");
       }
     }
-    $sql = "UPDATE users SET pay_id = :pay_id WHERE id = :id";
-    $st = $conn->prepare($sql);
-    $st->bindValue(":pay_id", $result->customer->id, PDO::PARAM_INT);
-    $st->bindValue(":id", $user_id, PDO::PARAM_INT);
-    $st->execute();
-    $conn = null;
 
-    $result = $gateway->subscription()->create([
-      'paymentMethodToken' => $_POST['pay_method_token'],
-      'planId' => $plan_id,
-      'merchantAccountId' => $merchantId
-    ]);
   }
 
 } else {
@@ -204,7 +199,7 @@ $conn = null;
           var url = `../pay/pay_braintree.php?uid=<?= $user_id ?>&affiliate=<?= $affiliate ?>&payment_type=${payment_type}`;
 
           // Send the data using post
-          var posting = $.post( url, { last_name: last_name, first_name: first_name, email: email, phone: phone, pay_method_token:  payload.nonce} );
+          var posting = $.post( url, { last_name: last_name, first_name: first_name, email: email, phone: phone, pay_method_token: payload.nonce} );
 
           // Put the results in a div
           posting.done(function( data )
@@ -212,7 +207,7 @@ $conn = null;
               // if data returned no errors
               if (!data.error)
               {
-
+                console.log(`data? ${data.nonce}`);
               } else {
 
                   // TODO: Display error message
