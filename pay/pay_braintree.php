@@ -51,7 +51,9 @@ if (isset($_GET['uid'])) {
   // - Check if client already has a token
   // - If so, grab token
   $clientToken = $gateway->clientToken()->generate();
-  $plan_id = $_GET["payment_type"] == "monthly" ? 'pb_monthly' : 'pb_yearly';
+  $payment_type = $_GET["payment_type"];
+
+  $plan_id = $_GET["payment_type"] == 'monthly' ? 'pb_monthly' : 'pb_yearly';
 
   if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_method_token'])) {
     $result = $gateway->customer()->create([
@@ -64,22 +66,25 @@ if (isset($_GET['uid'])) {
 
     if ($result->success) {
 
-      $sql = "UPDATE users SET pay_id = :pay_id, pay_token = :pay_token WHERE id = :id";
+      $pay_token = $result->customer->paymentMethods[0]->token;
+      $pay_id = $result->customer->id;
+
+      $sql = "UPDATE users SET pay_id = :pay_id, pay_token = :pay_token, payment_type = :payment_type WHERE id = :id";
       $st = $conn->prepare($sql);
-      $st->bindValue(":pay_id", $result->customer->id, PDO::PARAM_INT);
-      $st->bindValue(":pay_token", $result->customer->paymentMethods[0]->token, PDO::PARAM_INT);
+      $st->bindValue(":pay_id", $pay_id, PDO::PARAM_INT);
+      $st->bindValue(":pay_token", $pay_token, PDO::PARAM_STR);
+      $st->bindValue(":payment_type", $payment_type, PDO::PARAM_STR);
       $st->bindValue(":id", $user_id, PDO::PARAM_INT);
       $st->execute();
       $conn = null;
 
-      // TODO:
-      // - Create a new subscription
       $subscription = $gateway->subscription()->create([
-        'paymentMethodToken' => $_POST['pay_method_token'],
+        'paymentMethodToken' => $pay_token,
         'planId' => $plan_id
       ]);
 
     } else {
+      # TODO:  Display Errors
       foreach ($result->errors->deepAll() as $error) {
         echo ($error->code . ": " . $error->message . "\n");
       }
@@ -115,7 +120,8 @@ $conn = null;
   <div class="container">
     <div class="row">
       <div class="col-xs-12 col-sm-offset-3 col-sm-6">
-        <div class="panel panel-primary" style="margin-top: 150px;">
+        <h2 class="text-center text-primary" style="margin-top: 40px;">Purchase <?= $_GET['payment_type'] ?> Subscription</h2>
+        <div class="panel panel-primary" style="margin-top: 100px;">
           <div class="panel-heading">Card Holder Information</div>
           <div class="panel-body">
             <form id="pay-form" method="POST">
@@ -123,10 +129,9 @@ $conn = null;
               <div><input type="text" name="last_name" placeholder="Wayne" class="form-control" required></div>
               <div><input type="email" name="email" placeholder="Email" class="form-control" required></div>
               <div><input type="text" name="phone" placeholder="555-555-5555" class="form-control" required></div>
-              <input type="hidden" name="payment_type" value="<?= $plan_id ?>">
+              <input type="hidden" name="payment_type" value="<?= $payment_type ?>">
 			        <input type="hidden" name="affiliteid" value="<?php echo $affiliate; ?>" />
 
-              <!-- <button id="user-btn" class="btn btn-success" style="margin-top:20px; width:200px;">Payment Method ></button> -->
               <div id="dropin-container"></div>
                 <button id="submit-button" class="btn btn-success" style="margin-top:20px; width:200px;">Request payment method</button>
               </div>
@@ -183,7 +188,7 @@ $conn = null;
         instance.requestPaymentMethod(function (err, payload) 
         {
 
-          $("#pay-button").attr('disabled', true)
+          $("#submit-button").attr('disabled', true)
           // console.log(JSON.parse(payload));
           // Submit payload.nonce to your server
 
@@ -201,19 +206,19 @@ $conn = null;
           // Send the data using post
           var posting = $.post( url, { last_name: last_name, first_name: first_name, email: email, phone: phone, pay_method_token: payload.nonce} );
 
+          console.log(`payload.nonce? ${payload.nonce}`);
           // Put the results in a div
           posting.done(function( data )
           {
               // if data returned no errors
-              if (!data.error)
+              if (data.error)
               {
-                console.log(`data? ${data.nonce}`);
-              } else {
-
                   // TODO: Display error message
                   console.log('ERROR sending paymentForm!', data.error);
-                  $("#pay-button").attr('disabled', false)
+                  $("#submit-button").attr('disabled', false)
 
+              } else {
+                // TODO: Redirect to success page
               }
           });
         });
