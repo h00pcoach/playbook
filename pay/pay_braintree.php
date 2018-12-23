@@ -10,7 +10,7 @@ $conn->exec("set names utf8");
 $sql = "SELECT * FROM settings";
 $st = $conn->prepare($sql);
 
-	// Bind parameters
+// Bind parameters
 $st->execute();
 $settings = $st->fetch();
 // $conn = null;
@@ -27,6 +27,9 @@ if (isset($_GET['uid'])) {
   $st->execute();
   $user = $st->fetch();
 
+  if ($user["paid"] == 1) {
+    header('Location: ../play.php');
+  }
   $debug = true;
 
   $env = 'sandbox';
@@ -46,14 +49,13 @@ if (isset($_GET['uid'])) {
     'publicKey' => $publicKey,
     'privateKey' => $privateKey
   ]);
-  
-  // TODO:
-  // - Check if client already has a token
-  // - If so, grab token
+    
+  // Create a clientToken for the user -- only clients who haven't paid should reach this page
   $clientToken = $gateway->clientToken()->generate();
   $payment_type = $_GET["payment_type"];
+  $price = $payment_type == 'monthly' ? '$5.00' : '$39.00';
 
-  $plan_id = $_GET["payment_type"] == 'monthly' ? 'pb_monthly' : 'pb_yearly';
+  $plan_id = $payment_type == 'monthly' ? 'pb_monthly' : 'pb_yearly';
 
   if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_method_token'])) {
     $result = $gateway->customer()->create([
@@ -69,27 +71,33 @@ if (isset($_GET['uid'])) {
       $pay_token = $result->customer->paymentMethods[0]->token;
       $pay_id = $result->customer->id;
 
-      $sql = "UPDATE users SET pay_id = :pay_id, pay_token = :pay_token, payment_type = :payment_type WHERE id = :id";
-      $st = $conn->prepare($sql);
-      $st->bindValue(":pay_id", $pay_id, PDO::PARAM_INT);
-      $st->bindValue(":pay_token", $pay_token, PDO::PARAM_STR);
-      $st->bindValue(":payment_type", $payment_type, PDO::PARAM_STR);
-      $st->bindValue(":id", $user_id, PDO::PARAM_INT);
-      $st->execute();
-      $conn = null;
-
       $subscription = $gateway->subscription()->create([
         'paymentMethodToken' => $pay_token,
         'planId' => $plan_id
       ]);
 
-    } else {
-      # TODO:  Display Errors
-      foreach ($result->errors->deepAll() as $error) {
-        echo ($error->code . ": " . $error->message . "\n");
-      }
-    }
+      $sub_id = $subscription->id;
 
+      if ($subscription->success) {
+        $sql = "UPDATE users SET paid = 1, pay_id = :pay_id, pay_token = :pay_token, payment_type = :payment_type, subscription_id = :sub_id WHERE id = :id";
+        $st = $conn->prepare($sql);
+        $st->bindValue(":pay_id", $pay_id, PDO::PARAM_INT);
+        $st->bindValue(":pay_token", $pay_token, PDO::PARAM_STR);
+        $st->bindValue(":payment_type", $payment_type, PDO::PARAM_STR);
+        $st->bindValue(":subscription_id", $sub_id, PDO::PARAM_STR);
+        $st->bindValue(":id", $user_id, PDO::PARAM_INT);
+        $st->execute();
+        $conn = null;
+      } else {
+        $data["error"] = "Subscription Error: Please try again later.";
+        echo json_encode($data);
+      }
+
+    } else {
+      # TODO:  These errors aren't displaying
+      $data["error"] = "Card Declined: Please contact your financial institution.";
+      echo json_encode($data);
+    }
   }
 
 } else {
@@ -120,8 +128,10 @@ $conn = null;
   <div class="container">
     <div class="row">
       <div class="col-xs-12 col-sm-offset-3 col-sm-6">
-        <h2 class="text-center text-primary" style="margin-top: 40px;">Purchase <?= $_GET['payment_type'] ?> Subscription</h2>
-        <div class="panel panel-primary" style="margin-top: 100px;">
+        <h2 class="text-center text-primary" style="margin-top: 40px;">Purchase <?= $payment_type ?> Subscription</h2>
+        <h4 class="text-center text-muted"><?= $price ?> billed <?= $payment_type ?></h4>
+        <div id="errors" class="hidden"></div>
+        <div class="panel panel-primary" style="margin-top: 20px;">
           <div class="panel-heading">Card Holder Information</div>
           <div class="panel-body">
             <form id="pay-form" method="POST">
@@ -210,15 +220,21 @@ $conn = null;
           // Put the results in a div
           posting.done(function( data )
           {
+            console.log(`payload? ${JSON.stringify(payload)}`);
               // if data returned no errors
               if (data.error)
               {
                   // TODO: Display error message
                   console.log('ERROR sending paymentForm!', data.error);
+
+                  $('#errors.hidden').toggle();
+                  $('#errors').html(`Errors:</ br> ${data.error}`);
                   $("#submit-button").attr('disabled', false)
 
               } else {
                 // TODO: Redirect to success page
+                  console.log('SUCCESS sending paymentForm!', data);
+
               }
           });
         });
