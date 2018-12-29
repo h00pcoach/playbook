@@ -1,6 +1,7 @@
 <?php 
 require('../mydb_pdo.php');
-include("../pay/credentials.php");
+include('../pay/credentials.php');
+require_once('../pay/braintree_init.php');
 require_once '../vendor/braintree/braintree_php/lib/Braintree.php';
 
 // Initialize PDO
@@ -30,25 +31,25 @@ if (isset($_GET['uid'])) {
   if ($user["paid"] == 1) {
     header('Location: ../play.php');
   }
-  $debug = true;
+  // $debug = true;
 
-  $env = 'sandbox';
-  $merchantId = BT_MERCH_ID_SAND;
-  $publicKey = BT_PUB_KEY_SAND;
-  $privateKey = BT_PRIV_KEY_SAND;
-  if (!$debug) {
-    $env = 'prod';
-    $merchantId = BT_MERCH_ID_PROD;
-    $publicKey = BT_PUB_KEY_PROD;
-    $privateKey = BT_PRIV_KEY_PROD;
-  }
+  // $env = 'sandbox';
+  // $merchantId = BT_MERCH_ID_SAND;
+  // $publicKey = BT_PUB_KEY_SAND;
+  // $privateKey = BT_PRIV_KEY_SAND;
+  // if (!$debug) {
+  //   $env = 'prod';
+  //   $merchantId = BT_MERCH_ID_PROD;
+  //   $publicKey = BT_PUB_KEY_PROD;
+  //   $privateKey = BT_PRIV_KEY_PROD;
+  // }
 
-  $gateway = new Braintree_Gateway([
-    'environment' => $env,
-    'merchantId' => $merchantId,
-    'publicKey' => $publicKey,
-    'privateKey' => $privateKey
-  ]);
+  // $gateway = new Braintree_Gateway([
+  //   'environment' => $env,
+  //   'merchantId' => $merchantId,
+  //   'publicKey' => $publicKey,
+  //   'privateKey' => $privateKey
+  // ]);
     
   // Create a clientToken for the user -- only clients who haven't paid should reach this page
   $clientToken = $gateway->clientToken()->generate();
@@ -221,6 +222,7 @@ $conn = null;
           posting.done(function( data )
           {
             console.log(`payload? ${JSON.stringify(payload)}`);
+            console.log(`data? ${JSON.stringify(data)}`);
               // if data returned no errors
               if (data.error)
               {
