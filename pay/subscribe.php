@@ -1,6 +1,6 @@
 <?php 
 require('../mydb_pdo.php');
-require('../ChromePhp.php');
+// require('../ChromePhp.php');
 
 // include('../pay/credentials.php');
 require_once('../pay/braintree_init.php');
@@ -43,13 +43,11 @@ if (isset($_POST['userid'])) {
     if ($results->success) {
       $customer = $results->customer;
     } else {
-      foreach ($results->errors->deepAll() as $error) {
-        echo ($error->code . ": " . $error->message . "\n");
-      }
+      $data["error"] = $results->errors->deepAll();
+      echo json_encode($data);
     }
   }
 
-  ChromePhp::log("customer? " . $customer);
   if ($customer) {
 
     $payment_type = $_POST["payment_type"];
@@ -74,25 +72,33 @@ if (isset($_POST['userid'])) {
       $st->bindValue(":id", $user_id, PDO::PARAM_INT);
       $st->execute();
       $conn = null;
+
+      $data["success"] = $subscription;
+      echo json_encode($data);
+
     } else {
-      foreach ($results->errors->deepAll() as $error) {
-        echo ($error->code . ": " . $error->message . "\n");
-      }
+      $data["error"] = $results->errors->deepAll();
+      echo json_encode($data);
+      // foreach ($results->errors->deepAll() as $error) {
+      //   echo ($error->code . ": " . $error->message . "\n");
+      // }
       // $data["error"] = "Subscription Error: Please try again later.";
       // echo json_encode($data);
     }
 
   } else {
+    $data["error"] = $customer->errors->deepAll();
+    echo json_encode($data);
       # TODO:  These errors aren't displaying
-    foreach ($customer->errors->deepAll() as $error) {
-      echo ($error->code . ": " . $error->message . "\n");
-    }
+    // foreach ($customer->errors->deepAll() as $error) {
+    //   echo ($error->code . ": " . $error->message . "\n");
+    // }
     // $data["error"] = "Card Declined: Please contact your financial institution.";
     // echo json_encode($data);
   }
 
 } else {
-  header('Location: login.php');
+  echo ("User isn't logged in.");
 }
 
 // CLEANUP

@@ -60,7 +60,6 @@ if (isset($_GET['uid'])) {
               <div><input type="email" name="email" placeholder="Email" class="form-control" required></div>
               <div><input type="text" name="phone" placeholder="555-555-5555" class="form-control" required></div>
               <input type="hidden" name="payment_type" value="<?= $payment_type ?>">
-              <input type="hidden" name="price" value="<?= $price ?>">
               <input type="hidden" name="planid" value="<?= $plan_id ?>">
 			        <input type="hidden" name="affiliteid" value="<?= $affiliate; ?>" />
 			        <input type="hidden" name="userid" value="<?= $user_id; ?>" />
@@ -99,26 +98,12 @@ if (isset($_GET['uid'])) {
         }
       })
     });
-  
-    // $("#pay-form").submit(function( event )
-    // {
-
-    //     console.log('form submit clicked: ', $(this));
-
-    //     // Stop form from submitting normally
-    //     event.preventDefault();
-    // });
-    // $('#user-btn').click(function() 
-    // {
-    //   console.log(`user-btn clicked`);
-    //   $('.hidden').toggle()
-    // });
-    
   </script>
 
   <script>
     // var button = document.querySelector('#submit-button');
     var form = document.querySelector('form');
+    var url = "../pay/subscribe.php";
     var client_token = "<?php echo ($gateway->ClientToken()->generate()); ?>";
     
     braintree.dropin.create({
@@ -140,54 +125,27 @@ if (isset($_GET['uid'])) {
           } 
           // Add the nonce to the form and submit
           $('#nonce').val(payload.nonce);
-          form.submit();
+                    
+          // Send the data using post
+          var posting = $.post( url, $('#pay-form').serialize(),
+          function( data )
+          {
+            console.log(`data? ${data}`);
+            // if data returned no errors
+            if (data.error)
+            {
+              console.log('Error loading data!', data.error);
+              $('#errors.hidden').toggle();
+              $('#errors').html(`Errors:</ br> ${data.error}`);
+              $("#submit-button").attr('disabled', false);
+
+            } else {
+              console.log('Successfully loaded data!', data);
+              window.location.href = '../pay/success.php';
+            }
+          } ,'json' );
         });
       });
-      // button.addEventListener('click', function () {
-        // instance.requestPaymentMethod(function (err, payload) 
-        // {
-
-        //   $("#submit-button").attr('disabled', true)
-        //   // console.log(JSON.parse(payload));
-        //   // Submit payload.nonce to your server
-
-        //   // Get some values from elements on the page:
-        //   var form = $('#pay-form'),
-        //   last_name = form.find( "input[name='last_name']" ).val(),
-        //   first_name = form.find( "input[name='first_name']" ).val(),
-        //   email = form.find( "input[name='email']" ).val(),
-        //   phone = form.find( "input[name='phone']" ).val(),
-        //   payment_type = form.find( "input[name='payment_type']" ).val();
-          
-        //   console.log(`payment_type ${payment_type}`);
-
-        //   // Send the data using post
-        //   var posting = $.post( url, { last_name: last_name, first_name: first_name, email: email, phone: phone, pay_method_token: payload.nonce} );
-
-        //   console.log(`payload.nonce? ${payload.nonce}`);
-        //   // Put the results in a div
-        //   posting.done(function( data )
-        //   {
-        //     console.log(`payload? ${JSON.stringify(payload)}`);
-        //     console.log(`data? ${JSON.stringify(data)}`);
-        //       // if data returned no errors
-        //       if (data.error)
-        //       {
-        //           // TODO: Display error message
-        //           console.log('ERROR sending paymentForm!', data.error);
-
-        //           $('#errors.hidden').toggle();
-        //           $('#errors').html(`Errors:</ br> ${data.error}`);
-        //           $("#submit-button").attr('disabled', false)
-
-        //       } else {
-        //         // TODO: Redirect to success page
-        //           console.log('SUCCESS sending paymentForm!', data);
-
-        //       }
-        //   });
-        // });
-      // });
     });
   </script>
 </body>
