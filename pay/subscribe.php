@@ -1,5 +1,7 @@
 <?php 
 require('../mydb_pdo.php');
+require('../ChromePhp.php');
+
 // include('../pay/credentials.php');
 require_once('../pay/braintree_init.php');
 require_once '../vendor/braintree/braintree_php/lib/Braintree.php';
@@ -11,7 +13,7 @@ if (isset($_POST['userid'])) {
   // Initialize PDO
   $conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
   $conn->exec("set names utf8");
-  
+
   $sql = "SELECT * from users WHERE id = :id";
   $st = $conn->prepare($sql);
 
@@ -28,32 +30,41 @@ if (isset($_POST['userid'])) {
   $nonce = $_POST['nonce'];
 
   $customer = null;
-  if (isset($user["pay_id"])) {
+  if (isset($user["pay_id"]) && $user["pay_id"] != 0) {
     $customer = $gateway->customer()->find($user["pay_id"]);
   } else {
-    $customer = $gateway->customer()->create([
+    $results = $gateway->customer()->create([
       'firstName' => $_POST['first_name'],
       'lastName' => $_POST['last_name'],
       'email' => $_POST['email'],
       'phone' => $_POST['phone'],
       'paymentMethodNonce' => $nonce
     ]);
+    if ($results->success) {
+      $customer = $results->customer;
+    } else {
+      foreach ($results->errors->deepAll() as $error) {
+        echo ($error->code . ": " . $error->message . "\n");
+      }
+    }
   }
 
-  if ($customer->customer->id) {
+  ChromePhp::log("customer? " . $customer);
+  if ($customer) {
 
     $payment_type = $_POST["payment_type"];
     $plan_id = $_POST['planid'];
 
-    $pay_token = $result->customer->paymentMethods[0]->token;
-    $pay_id = $result->customer->id;
+    $pay_token = $customer->paymentMethods[0]->token;
+    $pay_id = $customer->id;
 
-    $subscription = $gateway->subscription()->create([
+    $results = $gateway->subscription()->create([
       'paymentMethodToken' => $pay_token,
       'planId' => $plan_id
     ]);
 
-    if ($subscription->success) {
+    if ($results->success) {
+      $subscription = $results->subscription;
       $sql = "UPDATE users SET paid = 1, pay_id = :pay_id, pay_token = :pay_token, payment_type = :payment_type, subscription_id = :subscription_id WHERE id = :id";
       $st = $conn->prepare($sql);
       $st->bindValue(":pay_id", $pay_id, PDO::PARAM_INT);
@@ -64,7 +75,7 @@ if (isset($_POST['userid'])) {
       $st->execute();
       $conn = null;
     } else {
-      foreach ($result->errors->deepAll() as $error) {
+      foreach ($results->errors->deepAll() as $error) {
         echo ($error->code . ": " . $error->message . "\n");
       }
       // $data["error"] = "Subscription Error: Please try again later.";
@@ -73,7 +84,7 @@ if (isset($_POST['userid'])) {
 
   } else {
       # TODO:  These errors aren't displaying
-    foreach ($subscription->errors->deepAll() as $error) {
+    foreach ($customer->errors->deepAll() as $error) {
       echo ($error->code . ": " . $error->message . "\n");
     }
     // $data["error"] = "Card Declined: Please contact your financial institution.";
