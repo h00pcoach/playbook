@@ -40,7 +40,12 @@ if (isset($_GET['uid'])) {
 
   <style type="text/css">
     .form-control{
-      margin-top:10px;
+      margin-top: 10px;
+    }
+    #errors {
+      padding: 15px;
+      font-weight: bold;
+      display: none;
     }
   </style>
 </head>
@@ -50,7 +55,7 @@ if (isset($_GET['uid'])) {
       <div class="col-xs-12 col-sm-offset-3 col-sm-6">
         <h2 class="text-center text-primary" style="margin-top: 40px;">Purchase <?= $payment_type ?> Subscription</h2>
         <h4 class="text-center text-muted"><?= $price ?> billed <?= $payment_type ?></h4>
-        <div id="errors" class="hidden"></div>
+        <p id="errors" class="bg-danger"></p>
         <div class="panel panel-primary" style="margin-top: 20px;">
           <div class="panel-heading">Card Holder Information</div>
           <div class="panel-body">
@@ -116,27 +121,35 @@ if (isset($_GET['uid'])) {
       form.addEventListener('submit', function (event) {
         event.preventDefault();
 
+        // Disable button to prevent submit
+        $("#submit-button").attr('disabled', true);
+
         instance.requestPaymentMethod(function (err, payload) {
-            console.log(`Request Payment Method ${JSON.stringify(payload)}`);
-            console.log(`Payload nonce? ${payload.nonce}`);
           if (err) {
             console.log('Request Payment Method Error', err);
+            $('#errors').toggle();
+            $('#errors').html(`Errors: ${err}`);
+            $("#submit-button").attr('disabled', false);
             return;
-          } 
+          }
+
+          // TEST FAILURE
+          // $('#nonce').val('fake-processor-declined-visa-nonce');
+                    
           // Add the nonce to the form and submit
           $('#nonce').val(payload.nonce);
-                    
+
           // Send the data using post
           var posting = $.post( url, $('#pay-form').serialize(),
           function( data )
           {
-            console.log(`data? ${data}`);
+            console.log(`data? ${JSON.stringify(data)}`);
             // if data returned no errors
             if (data.error)
             {
-              console.log('Error loading data!', data.error);
-              $('#errors.hidden').toggle();
-              $('#errors').html(`Errors:</ br> ${data.error}`);
+              // console.log('Error loading data!', data.error);
+              $('#errors').toggle();
+              $('#errors').html(`Errors: ${data.error}`);
               $("#submit-button").attr('disabled', false);
 
             } else {

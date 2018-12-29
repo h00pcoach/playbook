@@ -1,10 +1,16 @@
 <?php 
 require('../mydb_pdo.php');
-// require('../ChromePhp.php');
+require('../ChromePhp.php');
 
 // include('../pay/credentials.php');
 require_once('../pay/braintree_init.php');
 require_once '../vendor/braintree/braintree_php/lib/Braintree.php';
+
+function errorJson($msg)
+{
+  print json_encode(array('error' => $msg));
+  exit();
+}
 
 if (isset($_POST['userid'])) {
   $user_id = $_POST['userid'];
@@ -43,58 +49,44 @@ if (isset($_POST['userid'])) {
     if ($results->success) {
       $customer = $results->customer;
     } else {
-      $data["error"] = $results->errors->deepAll();
-      echo json_encode($data);
+      $message = $results->verification->_processorResponseCode . ' ' . $results->verification->_processorResponseText;
+      return errorJson($message);
     }
   }
 
-  if ($customer) {
+  $payment_type = $_POST["payment_type"];
 
-    $payment_type = $_POST["payment_type"];
-    $plan_id = $_POST['planid'];
+  // PLAN ID: TEST FAILURE
+  // $plan_id = 'pb_weekly';
+  $plan_id = $_POST['planid'];
 
-    $pay_token = $customer->paymentMethods[0]->token;
-    $pay_id = $customer->id;
+  $pay_token = $customer->paymentMethods[0]->token;
+  $pay_id = $customer->id;
 
-    $results = $gateway->subscription()->create([
-      'paymentMethodToken' => $pay_token,
-      'planId' => $plan_id
-    ]);
+  $results = $gateway->subscription()->create([
+    'paymentMethodToken' => $pay_token,
+    'planId' => $plan_id
+  ]);
 
-    if ($results->success) {
-      $subscription = $results->subscription;
-      $sql = "UPDATE users SET paid = 1, pay_id = :pay_id, pay_token = :pay_token, payment_type = :payment_type, subscription_id = :subscription_id WHERE id = :id";
-      $st = $conn->prepare($sql);
-      $st->bindValue(":pay_id", $pay_id, PDO::PARAM_INT);
-      $st->bindValue(":pay_token", $pay_token, PDO::PARAM_STR);
-      $st->bindValue(":payment_type", $payment_type, PDO::PARAM_STR);
-      $st->bindValue(":subscription_id", $subscription->id, PDO::PARAM_STR);
-      $st->bindValue(":id", $user_id, PDO::PARAM_INT);
-      $st->execute();
-      $conn = null;
+  if ($results->success) {
+    $subscription = $results->subscription;
+    $sql = "UPDATE users SET paid = 1, pay_id = :pay_id, pay_token = :pay_token, payment_type = :payment_type, subscription_id = :subscription_id WHERE id = :id";
+    $st = $conn->prepare($sql);
+    $st->bindValue(":pay_id", $pay_id, PDO::PARAM_INT);
+    $st->bindValue(":pay_token", $pay_token, PDO::PARAM_STR);
+    $st->bindValue(":payment_type", $payment_type, PDO::PARAM_STR);
+    $st->bindValue(":subscription_id", $subscription->id, PDO::PARAM_STR);
+    $st->bindValue(":id", $user_id, PDO::PARAM_INT);
+    $st->execute();
+    $conn = null;
 
-      $data["success"] = $subscription;
-      echo json_encode($data);
-
-    } else {
-      $data["error"] = $results->errors->deepAll();
-      echo json_encode($data);
-      // foreach ($results->errors->deepAll() as $error) {
-      //   echo ($error->code . ": " . $error->message . "\n");
-      // }
-      // $data["error"] = "Subscription Error: Please try again later.";
-      // echo json_encode($data);
-    }
+    $data["success"] = $subscription;
+    echo json_encode($data);
 
   } else {
-    $data["error"] = $customer->errors->deepAll();
-    echo json_encode($data);
-      # TODO:  These errors aren't displaying
-    // foreach ($customer->errors->deepAll() as $error) {
-    //   echo ($error->code . ": " . $error->message . "\n");
-    // }
-    // $data["error"] = "Card Declined: Please contact your financial institution.";
-    // echo json_encode($data);
+    ChromePhp::log('Subscription failed: ' . $results);
+    $message = $results->message;
+    return errorJson($message);
   }
 
 } else {
