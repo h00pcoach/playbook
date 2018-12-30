@@ -2,7 +2,7 @@
 require('../mydb_pdo.php');
 
 require_once(__DIR__ . '/braintree_init.php');
-require_once '../vendor/braintree/braintree_php/lib/Braintree.php';
+// require_once '../vendor/braintree/braintree_php/lib/Braintree.php';
 
 function errorJson($msg)
 {
@@ -87,10 +87,7 @@ if (isset($_POST['userid'])) {
   }
 
 } else {
-  echo ("User isn't logged in.");
+  header('Location: ../play.php');
 }
-
-// CLEANUP
-$conn = null;
 
 ?>

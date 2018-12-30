@@ -18,14 +18,14 @@ if (isset($_GET['uid'])) {
   $user = $st->fetch();
   $conn = null;
   if ($user["paid"] == 1) {
-    header('Location: play.php');
+    header('Location: ../play.php');
   }
   $affiliate = $_GET['affiliate'];
   $payment_type = $_GET["payment_type"];
   $price = $payment_type == 'monthly' ? '$5.00' : '$39.00';
   $plan_id = $payment_type == 'monthly' ? 'pb_monthly' : 'pb_yearly';
 } else {
-  header('Location: login.php');
+  header('Location: ../play.php');
 }
 ?>
 <!DOCTYPE html>
@@ -60,10 +60,10 @@ if (isset($_GET['uid'])) {
           <div class="panel-heading">Card Holder Information</div>
           <div class="panel-body">
             <form id="pay-form" method="POST" action="https://www.hoopcoach.org/playbook/pay/subscribe.php">
-              <div><input type="text" name="first_name" placeholder="Bruce" class="form-control" required></div>
-              <div><input type="text" name="last_name" placeholder="Wayne" class="form-control" required></div>
+              <div><input type="text" name="first_name" placeholder="First Name" class="form-control" required></div>
+              <div><input type="text" name="last_name" placeholder="Last Name" class="form-control" required></div>
               <div><input type="email" name="email" placeholder="Email" class="form-control" required></div>
-              <div><input type="text" name="phone" placeholder="555-555-5555" class="form-control" required></div>
+              <div><input type="text" name="phone" placeholder="Phone" class="form-control" required></div>
               <input type="hidden" name="payment_type" value="<?= $payment_type ?>">
               <input type="hidden" name="planid" value="<?= $plan_id ?>">
 			        <input type="hidden" name="affiliteid" value="<?= $affiliate; ?>" />
@@ -121,7 +121,7 @@ if (isset($_GET['uid'])) {
         event.preventDefault();
 
         console.log(`submit clicked!!`);
-        
+
         // Disable button to prevent submit
         $("#submit-button").attr('disabled', true);
 

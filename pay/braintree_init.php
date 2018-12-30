@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("credentials.php");
+include(__DIR__ . "/credentials.php");
 require_once("../vendor/autoload.php");
 
 $debug = true;
