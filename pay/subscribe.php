@@ -1,9 +1,7 @@
 <?php 
 require('../mydb_pdo.php');
-require('../ChromePhp.php');
 
-// include('../pay/credentials.php');
-require_once('../pay/braintree_init.php');
+require_once(__DIR__ . '/braintree_init.php');
 require_once '../vendor/braintree/braintree_php/lib/Braintree.php';
 
 function errorJson($msg)
@@ -84,7 +82,6 @@ if (isset($_POST['userid'])) {
     echo json_encode($data);
 
   } else {
-    ChromePhp::log('Subscription failed: ' . $results);
     $message = $results->message;
     return errorJson($message);
   }

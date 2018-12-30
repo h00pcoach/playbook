@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../pay/credentials.php");
+include("credentials.php");
 require_once("../vendor/autoload.php");
 
 $debug = true;

@@ -1,6 +1,6 @@
 <?php 
 require('../mydb_pdo.php');
-require_once('../pay/braintree_init.php');
+require_once(__DIR__ . '/braintree_init.php');
 
 if (isset($_GET['uid'])) {
   $user_id = $_GET['uid'];
@@ -18,7 +18,7 @@ if (isset($_GET['uid'])) {
   $user = $st->fetch();
   $conn = null;
   if ($user["paid"] == 1) {
-    header('Location: ../play.php');
+    header('Location: play.php');
   }
   $affiliate = $_GET['affiliate'];
   $payment_type = $_GET["payment_type"];
@@ -59,7 +59,7 @@ if (isset($_GET['uid'])) {
         <div class="panel panel-primary" style="margin-top: 20px;">
           <div class="panel-heading">Card Holder Information</div>
           <div class="panel-body">
-            <form id="pay-form" method="POST" action="../pay/subscribe.php">
+            <form id="pay-form" method="POST" action="https://www.hoopcoach.org/playbook/pay/subscribe.php">
               <div><input type="text" name="first_name" placeholder="Bruce" class="form-control" required></div>
               <div><input type="text" name="last_name" placeholder="Wayne" class="form-control" required></div>
               <div><input type="email" name="email" placeholder="Email" class="form-control" required></div>
@@ -109,7 +109,6 @@ if (isset($_GET['uid'])) {
     // var button = document.querySelector('#submit-button');
     var form = document.querySelector('form');
     var url = "../pay/subscribe.php";
-    var client_token = "<?php echo ($gateway->ClientToken()->generate()); ?>";
     
     braintree.dropin.create({
       authorization: "<?= $gateway->ClientToken()->generate() ?>",
@@ -121,6 +120,8 @@ if (isset($_GET['uid'])) {
       form.addEventListener('submit', function (event) {
         event.preventDefault();
 
+        console.log(`submit clicked!!`);
+        
         // Disable button to prevent submit
         $("#submit-button").attr('disabled', true);
 
@@ -135,6 +136,9 @@ if (isset($_GET['uid'])) {
 
           // TEST FAILURE
           // $('#nonce').val('fake-processor-declined-visa-nonce');
+
+          // TEST SUCCESS
+          // $('#nonce').val('fake-valid-nonce');
                     
           // Add the nonce to the form and submit
           $('#nonce').val(payload.nonce);
@@ -153,8 +157,8 @@ if (isset($_GET['uid'])) {
               $("#submit-button").attr('disabled', false);
 
             } else {
-              console.log('Successfully loaded data!', data);
-              window.location.href = '../pay/success.php';
+              // console.log('Successfully loaded data!', data);
+              window.location.href = 'https://www.hoopcoach.org/playbook/pay/success_new.php';
             }
           } ,'json' );
         });
