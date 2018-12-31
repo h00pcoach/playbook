@@ -1,8 +1,7 @@
 <?php 
 require('../mydb_pdo.php');
-
 require_once(__DIR__ . '/braintree_init.php');
-// require_once '../vendor/braintree/braintree_php/lib/Braintree.php';
+// require_once(__DIR__ . '/user.php');
 
 function errorJson($msg)
 {

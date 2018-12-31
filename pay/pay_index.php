@@ -1,22 +1,11 @@
 <?php 
 require('../mydb_pdo.php');
 require_once(__DIR__ . '/braintree_init.php');
+require_once(__DIR__ . '/user.php');
 
 if (isset($_GET['uid'])) {
   $user_id = $_GET['uid'];
-
-  // Initialize PDO
-  $conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
-  $conn->exec("set names utf8");
-
-  $sql = "SELECT * from users WHERE id = :id";
-  $st = $conn->prepare($sql);
-
-  // Bind parameters
-  $st->bindValue(":id", $user_id, PDO::PARAM_INT);
-  $st->execute();
-  $user = $st->fetch();
-  $conn = null;
+  
   if ($user["paid"] == 1) {
     header('Location: ../play.php');
   }
