@@ -1,8 +1,13 @@
 <?php
 require('../mydb_pdo.php');
-require_once(__DIR__ . '/user.php');
 
-if (!isset($user['paid']) || $user['subscription_id'] == 0) {
+require_once(__DIR__ . '/user.php');
+// require('../ChromePhp.php');
+
+// ChromePhp::log('user paid? ' . $user['paid']);
+// ChromePhp::log('user subscription_id? ' . $user['subscription_id']);
+
+if (!isset($user['paid']) || !isset($user['subscription_id'])) {
   header('Location: ../play.php');
 }
 
@@ -32,7 +37,7 @@ $price = $payment_type == 'monthly' ? '$5.00' : '$39.00';
               <h5 class="card-title text-capitalize"><?= $payment_type ?> Subscription</h5>
               <h6 class="card-subtitle mb-2 text-muted"><?= $price ?></h6>
               <p class="card-text">You are a <?= $payment_type ?> Playbook Pro subscriber.</p>
-              <a href="#" class="btn btn-danger">Cancel</a>
+              <a id="cancel-btn" href="#" class="btn btn-danger">Cancel</a>
             </div>
           </div>
         </div>
@@ -40,14 +45,35 @@ $price = $payment_type == 'monthly' ? '$5.00' : '$39.00';
     </div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 
   <script>
-    // TODO: 
     // - Catch cancel click an verify cancellation
-    // - Build cancel via Braintree docs: https://developers.braintreepayments.com/reference/request/subscription/cancel/php
+    $('#cancel-btn').click(() => {
+      if (confirm("Are you sure you want to cancel?")) 
+      {
+        // TODO: 
+        // - Build cancel via Braintree docs: https://developers.braintreepayments.com/reference/request/subscription/cancel/php
+        
+        $("#cancel-btn").attr('disabled', true);
+        var url = '../pay/cancel.php';
+        
+        // Send the data using post
+        var posting = $.post( url, {user_id: '<?= $user['id'] ?>', subscription_id: '<?= $user['subscription_id'] ?>'});
+        posting.done(function( data )
+        {
+          // if data returned no errors
+          if (data.success)
+          {
+          } else {
+            $("#cancel-btn").attr('disabled', false);
+          }
+        });
+        
+        
+      }
+    });
   </script>
 </body>
 </html>

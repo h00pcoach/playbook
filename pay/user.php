@@ -1,5 +1,9 @@
 <?php
 
+if (!isset($_GET['uid'])) {
+  header('Location: ../play.php');
+}
+
 $user_id = $_GET['uid'];
 
   // Initialize PDO
