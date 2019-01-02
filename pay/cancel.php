@@ -18,7 +18,7 @@ if ($result->success) {
   $st->execute();
   $conn = null;
 
-  $data["success"] = $subscription;
+  $data["success"] = "Your subscription has been cancelled.";
   echo json_encode($data);
 } else {
   $data["error"] = "There was an error cancelling this subscription. " . $result->message;

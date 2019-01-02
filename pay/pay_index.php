@@ -2,10 +2,13 @@
 require('../mydb_pdo.php');
 require_once(__DIR__ . '/braintree_init.php');
 require_once(__DIR__ . '/user.php');
+require('../ChromePhp.php');
 
-if (isset($_GET['uid'])) {
+ChromePhp::log('session user_id? ' . $_SESSION['user_id']);
+if (isset($_SESSION['user_id']) && isset($_GET['uid'])) {
   $user_id = $_GET['uid'];
-  
+  $user = get_user($user_id);
+
   if ($user["paid"] == 1) {
     header('Location: ../play.php');
   }
@@ -25,7 +28,8 @@ if (isset($_GET['uid'])) {
 <head>
   <meta charset="utf-8">
   <script src="https://js.braintreegateway.com/web/dropin/1.14.1/js/dropin.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
 
   <style type="text/css">
     .form-control{
@@ -39,15 +43,23 @@ if (isset($_GET['uid'])) {
   </style>
 </head>
 <body>
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="#">
+      <img class="" src="../pb_logo.png" srcset="../pb_logo@2x.png" alt="Logo" width="auto" height="30">
+    </a>
+  </nav>
   <div class="container">
+    
     <div class="row">
-      <div class="col-xs-12 col-sm-offset-3 col-sm-6">
-        <h2 class="text-center text-primary" style="margin-top: 40px;">Purchase <?= $payment_type ?> Subscription</h2>
-        <h4 class="text-center text-muted"><?= $price ?> billed <?= $payment_type ?></h4>
+      <div class="col-12 mt-5">
         <p id="errors" class="bg-danger"></p>
-        <div class="panel panel-primary" style="margin-top: 20px;">
-          <div class="panel-heading">Card Holder Information</div>
-          <div class="panel-body">
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title text-capitalize text-primary">Purchase <?= $payment_type ?> Subscription</h3>
+            <div class="card-subtitle text-muted"><?= $price ?> billed <?= $payment_type ?></div>
+          </div>
+          <div class="card-body">
+            <div class="card-subtitle">Card Holder Information</div>
             <form id="pay-form" method="POST" action="https://www.hoopcoach.org/playbook/pay/subscribe.php">
               <div><input type="text" name="first_name" placeholder="First Name" class="form-control" required></div>
               <div><input type="text" name="last_name" placeholder="Last Name" class="form-control" required></div>

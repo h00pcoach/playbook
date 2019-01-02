@@ -1,7 +1,7 @@
 <?php 
 require('../mydb_pdo.php');
 require_once(__DIR__ . '/braintree_init.php');
-// require_once(__DIR__ . '/user.php');
+require_once(__DIR__ . '/user.php');
 
 function errorJson($msg)
 {
@@ -11,24 +11,13 @@ function errorJson($msg)
 
 if (isset($_POST['userid'])) {
   $user_id = $_POST['userid'];
+  $user = get_user($user_id);
+
   $affiliate = $_POST['affiliteid'];
-
-  // Initialize PDO
-  $conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
-  $conn->exec("set names utf8");
-
-  $sql = "SELECT * from users WHERE id = :id";
-  $st = $conn->prepare($sql);
-
-  // Bind parameters
-  $st->bindValue(":id", $user_id, PDO::PARAM_INT);
-  $st->execute();
-  $user = $st->fetch();
 
   if ($user["paid"] == 1) {
     header('Location: ../play.php');
   }
-
 
   $nonce = $_POST['nonce'];
 
@@ -67,6 +56,11 @@ if (isset($_POST['userid'])) {
 
   if ($results->success) {
     $subscription = $results->subscription;
+
+    // Initialize PDO
+    $conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
+    $conn->exec("set names utf8");
+
     $sql = "UPDATE users SET paid = 1, pay_id = :pay_id, pay_token = :pay_token, payment_type = :payment_type, subscription_id = :subscription_id WHERE id = :id";
     $st = $conn->prepare($sql);
     $st->bindValue(":pay_id", $pay_id, PDO::PARAM_INT);
@@ -86,7 +80,8 @@ if (isset($_POST['userid'])) {
   }
 
 } else {
-  header('Location: ../play.php');
+  // TODO:  Return error don't redirect
+  errorJson("User Id is required!");
 }
 
 ?>

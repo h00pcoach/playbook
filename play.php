@@ -5,63 +5,55 @@
 
     // TODO TODO TODO: UPDATE PATH BEFORE UPLOADING
     // $path = 'https://www.hoopcoach.org/playbook/';
-    $path = 'http://pb.local:8888/';
+$path = 'http://pb.local:8888/';
 
-	if (!isset($_COOKIE["visited"]))
-	{
+if (!isset($_COOKIE["visited"])) {
 		// Save a cookie for 1 day
-		$showOverlay = true; // this will be used to show the overlay one time in 24hrs
+	$showOverlay = true; // this will be used to show the overlay one time in 24hrs
 
-		setcookie("visited", true, time() + 3600 * 24);
-	} else {
-		$showOverlay = false;
-	}
-    $url= $_SERVER["SERVER_NAME"];
-    $page=$_SERVER["REQUEST_URI"];
-    if($url == "hoopcoach.org")
-    {
-       header("Location: https://www.hoopcoach.org$page");
-    }
-	session_start();
-	// require_once('mydb.php');
-    require_once('mydb_pdo.php');
+	setcookie("visited", true, time() + 3600 * 24);
+} else {
+	$showOverlay = false;
+}
+$url = $_SERVER["SERVER_NAME"];
+$page = $_SERVER["REQUEST_URI"];
+if ($url == "hoopcoach.org") {
+	header("Location: https://www.hoopcoach.org$page");
+}
+session_start();
+require_once('mydb_pdo.php');
 
 	// Initialize PDO
-	$conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
-    $conn->exec("set names utf8");
+$conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
+$conn->exec("set names utf8");
 
-	$premium_user=0;
-    $is_student = false;
+$premium_user = 0;
+$is_student = false;
 
 	// Free user or paid user?
-	unset($_SESSION['student_id']);
+unset($_SESSION['student_id']);
 
-	if(isset($_GET['name']))
-	{
-		$name = $_GET['name'] . ' ';
-	}
-	else
-	{
-		$name = 'customplaybook';
-	}
+if (isset($_GET['name'])) {
+	$name = $_GET['name'] . ' ';
+} else {
+	$name = 'customplaybook';
+}
 
-	if(isset($_SESSION['user_id']) && !isset($_SESSION['student_id']))
-	{
-		$sql = "SELECT * from users WHERE id = :id";
-		$st = $conn->prepare( $sql );
+if (isset($_SESSION['user_id']) && !isset($_SESSION['student_id'])) {
+	$sql = "SELECT * from users WHERE id = :id";
+	$st = $conn->prepare($sql);
 
 	    // Bind parameters
-	  $st->bindValue( ":id", $_SESSION['user_id'], PDO::PARAM_INT );
-		$st->execute();
-		$result = $st->fetch();
+	$st->bindValue(":id", $_SESSION['user_id'], PDO::PARAM_INT);
+	$st->execute();
+	$result = $st->fetch();
 		// $conn = null;
 
-		if ($result['paid'] == 1)
-		{
-			$premium_user=1;
-		}
+	if ($result['paid'] == 1) {
+		$premium_user = 1;
+	}
 
-	} else { ?>
+} else { ?>
 
 	<style>
 		#actions, #actions-xs
@@ -69,19 +61,18 @@
 			display: none;
 		}
 	</style>
-   <?php }
+   <?php 
+	}
 
-	if(isset($_GET['id']))
-	{
+	if (isset($_GET['id'])) {
 
 		// Admin users
-		if(isset($_SESSION['admin']))
-		{
+		if (isset($_SESSION['admin'])) {
 			$sql = "SELECT * FROM playdata WHERE id = :id";
-			$st = $conn->prepare( $sql );
+			$st = $conn->prepare($sql);
 
 			// Bind parameters
-		    $st->bindValue( ":id", $_GET['id'], PDO::PARAM_INT );
+			$st->bindValue(":id", $_GET['id'], PDO::PARAM_INT);
 			$st->execute();
 			$item = $st->fetch();
 			// $conn = null;
@@ -90,84 +81,79 @@
 		}
 
 		// Free users or paid users?
-		if(isset($_SESSION['user_id']))
-		{
+		if (isset($_SESSION['user_id'])) {
 			// echo $_SESSION['user_id'];
 
 			$sql = "SELECT * FROM users WHERE id = :id";
-			$st = $conn->prepare( $sql );
+			$st = $conn->prepare($sql);
 
 		    // Bind parameters
-		    $st->bindValue( ":id", $_SESSION['user_id'], PDO::PARAM_INT );
+			$st->bindValue(":id", $_SESSION['user_id'], PDO::PARAM_INT);
 			$st->execute();
 			$result = $st->fetch();
 			// $conn = null;
 
-			if ($result['paid'] == 1)
-			{
+			if ($result['paid'] == 1) {
 				$premium_user = 1;
 			}
 		}
 
 		// Student user
-		if(isset($_SESSION['student_id']))
-		{
+		if (isset($_SESSION['student_id'])) {
 			// $_SESSION['student_id']
 			$sql = "SELECT * FROM student WHERE id = :id";
 
 			// Bind parameters
-			$st->bindValue( ":id", $_GET['id'], PDO::PARAM_INT );
+			$st->bindValue(":id", $_GET['id'], PDO::PARAM_INT);
 			$st->execute();
 			$item = $st->fetch();
 			// $conn = null;
 
 			$_SESSION['user_id'] = $item['coach_id'];
 
-            $is_student = true;
+			$is_student = true;
 		}
 
 	}
 
 
-	$result='';
+	$result = '';
 
 	$plays_count = 0;
-	if(isset($_SESSION['user_id']))
-	{
-		$conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
-	    $conn->exec("set names utf8");
+	if (isset($_SESSION['user_id'])) {
+		$conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
+		$conn->exec("set names utf8");
 
 		$sql = "SELECT * from users WHERE id = :id";
-		$st = $conn->prepare( $sql );
+		$st = $conn->prepare($sql);
 
 	    // Bind parameters
-	    $st->bindValue( ":id", $_SESSION['user_id'], PDO::PARAM_INT );
+		$st->bindValue(":id", $_SESSION['user_id'], PDO::PARAM_INT);
 		$st->execute();
 
 		$result = $st->fetch();
 
 		$sql = "SELECT * FROM playdata WHERE userid = :userid";
-		$st = $conn->prepare( $sql );
+		$st = $conn->prepare($sql);
 
-		$st->bindValue( ":userid", $_SESSION['user_id'], PDO::PARAM_INT );
+		$st->bindValue(":userid", $_SESSION['user_id'], PDO::PARAM_INT);
 		$st->execute();
 
 		$getAllPlaysResult = array();
-		while ( $row = $st->fetch() )
-	  	{
-	   		$getAllPlaysResult[] = $row;
-	  	}
+		while ($row = $st->fetch()) {
+			$getAllPlaysResult[] = $row;
+		}
 
 		// Now get the total number of episodes that matched the criteria
-	 	$sql = "SELECT FOUND_ROWS() AS totalRows";
-	  	$totalRows = $conn->query( $sql )->fetch();
+		$sql = "SELECT FOUND_ROWS() AS totalRows";
+		$totalRows = $conn->query($sql)->fetch();
 
 		$plays_count = $totalRows[0];
 	  	// $conn = null;
 	}
 
 	$conn = null;
-?>
+	?>
 
 <!DOCTYPE html>
 	<head>
@@ -184,83 +170,77 @@
 		<?php
 
 			// MOVEMENTS  MOVEMENTS  MOVEMENTS  MOVEMENTS  MOVEMENTS  MOVEMENTS  MOVEMENTS  MOVEMENTS
-			$name='';$rate='""';$rated=0;$priv=0;
+	$name = '';
+	$rate = '""';
+	$rated = 0;
+	$priv = 0;
 
-			$conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
-		    $conn->exec("set names utf8");
+	$conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
+	$conn->exec("set names utf8");
 
-			if(isset($_REQUEST['id']))
-			{
-				if(isset($_SESSION['user_id']))
-				{
-					$sql = "SELECT  id, name, file, rate, (CASE WHEN playdata.rated LIKE :userid THEN 1 else 0 end) AS `raed`, tags, scout, `private`  from playdata WHERE id = :id";
+	if (isset($_REQUEST['id'])) {
+		if (isset($_SESSION['user_id'])) {
+			$sql = "SELECT  id, name, file, rate, (CASE WHEN playdata.rated LIKE :userid THEN 1 else 0 end) AS `raed`, tags, scout, `private`  from playdata WHERE id = :id";
 
-					$st = $conn->prepare( $sql );
+			$st = $conn->prepare($sql);
 
-					$userid = '%'.$_SESSION['user_id'].'%';
+			$userid = '%' . $_SESSION['user_id'] . '%';
 
 				    // Bind parameters
-					$st->bindValue( ":id", $_REQUEST['id'], PDO::PARAM_INT );
-				    $st->bindValue( ":userid", $userid, PDO::PARAM_INT );
-					$st->execute();
-					$res = $st->fetch();
-				}
-				else {
+			$st->bindValue(":id", $_REQUEST['id'], PDO::PARAM_INT);
+			$st->bindValue(":userid", $userid, PDO::PARAM_INT);
+			$st->execute();
+			$res = $st->fetch();
+		} else {
 
-					$sql = "SELECT  *  FROM playdata WHERE id = :id";
-					$st = $conn->prepare( $sql );
+			$sql = "SELECT  *  FROM playdata WHERE id = :id";
+			$st = $conn->prepare($sql);
 
-					$st->bindValue( ":id", $_REQUEST['id'], PDO::PARAM_INT );
-					$st->execute();
-					$res = $st->fetch();
-				}
+			$st->bindValue(":id", $_REQUEST['id'], PDO::PARAM_INT);
+			$st->execute();
+			$res = $st->fetch();
+		}
 
-                $i=1;
-				if(isset($res['movements']))
-				{
-					$nm=explode('`',$res['movements']);
-				}
-				if(isset($res['userid']))
-				{
-					$file="users/".$res['userid']."/".$res['file'];
-				}
-				else
-				$file="users/"."/".$res['file'];
-				while(file_exists($file.'_'.$i.'.jpeg') && $i<10)
-				{
+		$i = 1;
+		if (isset($res['movements'])) {
+			$nm = explode('`', $res['movements']);
+		}
+		if (isset($res['userid'])) {
+			$file = "users/" . $res['userid'] . "/" . $res['file'];
+		} else
+			$file = "users/" . "/" . $res['file'];
+		while (file_exists($file . '_' . $i . '.jpeg') && $i < 10) {
 
-					echo '<meta property="og:image" content="https://basketballplaybook.org/'.$file.'_'.($i).'.jpeg'.'" />';
+			echo '<meta property="og:image" content="https://basketballplaybook.org/' . $file . '_' . ($i) . '.jpeg' . '" />';
 
-					if($i<4)
-                    {
-						echo '<meta property="twitter:image'.$i.':src" content="https://basketballplaybook.org/'.$file.'_'.($i).'.jpeg'.'" />';
-                    }
-
-					++$i;
-				}
-
-				$name = $res['name']; $rate=$res['rate'];
-
-				$priv = $res['private'];
-
-				if(isset($_SESSION['user_id']))
-                {
-					$rated=$res['raed'];
-                }
+			if ($i < 4) {
+				echo '<meta property="twitter:image' . $i . ':src" content="https://basketballplaybook.org/' . $file . '_' . ($i) . '.jpeg' . '" />';
 			}
-		?>
+
+			++$i;
+		}
+
+		$name = $res['name'];
+		$rate = $res['rate'];
+
+		$priv = $res['private'];
+
+		if (isset($_SESSION['user_id'])) {
+			$rated = $res['raed'];
+		}
+	}
+	?>
 
 		<!-- page details -->
 		<meta name="keywords" content="basketball,playbook, basketball coach, basketball planner, coaching apps, basketball plays and drills, basketball plays, basketball drills."/>
 		<meta name="description" content="Hoop Coach Playbook is a web based tool for basketball coaches that saves time so you can focus on developing your players. Coaching apps and basketball plays and drills."/>
 
         <?php
-            $title = ' created on Hoopcoach Playbook';
-            if ($name != '')
-            {
-                $title = $name . $title;
-            }
-        ?>
+							$title = ' created on Hoopcoach Playbook';
+							if ($name != '') {
+								$title = $name . $title;
+							}
+							?>
 		<title><?= $title ?></title>
 
 		<!-- social -->
@@ -510,7 +490,7 @@
 				  }
 				}
 
-				<?php if(isset($_SESSION['user_id'])){ ?>
+				<?php if (isset($_SESSION['user_id'])) { ?>
 					user={id:'<?php echo $result['id']; ?>',lastname:'<?php echo $result['name']; ?>',email:'<?php echo $result['email']; ?>',ismale:'<?php echo $result['ismale']; ?>',role:'<?php echo $result['role']; ?>',profileurl:'<?php echo $result['hoopcoachpage']; ?>',avatarurl:'<?php echo $result['avatar']; ?>',hoopid:'<?php echo $result['hoopcoachid']; ?>'};
 
 					if(user.avatarurl.length<5)
@@ -520,7 +500,8 @@
 							user.avatarurl='Model/Img/female_avatar_icon.png';
 
 			        setUser(true);
-				<?php } ?>
+				<?php 
+		} ?>
 
 				$('#star, #star-xs').raty({
 
@@ -532,50 +513,51 @@
 
 					hints: ['low success', 'below avg', 'average', 'above avg', 'hi success'],
 
-					readOnly:<?php if(intval($rated)==0) echo 'false'; else echo 'true'; ?>,
+					readOnly:<?php if (intval($rated) == 0) echo 'false';
+													else echo 'true'; ?>,
 
 					starOff: 'Model/Img/balls/ball04.png',
 
 					  starOn : 'Model/Img/balls/ball03.png',
 
-					 score: <?php if($rate=='') echo '""'; else echo $rate; ?>,
+					 score: <?php if ($rate == '') echo '""';
+												else echo $rate; ?>,
 
 					 click: function(score, evt){
 
-					<?php if(isset($_GET['id'])){ ?>
+					<?php if (isset($_GET['id'])) { ?>
 
 				  		$.post('save.php',{id:<?php echo $_GET['id']; ?>,rate:score},function(d){ alert(d);});
 
-					<?php } ?>
+					<?php 
+			} ?>
 
 				  }
 
 				});
 		        <?php
-					if(!isset($result['paid']) || $result['paid'] == 0)
-					{
-						echo "$('#pdf').click(function()
+									if (!isset($result['paid']) || $result['paid'] == 0) {
+										echo "$('#pdf').click(function()
 						{
 							$('#pro-body').html('PDF Printouts are a Pro Feature.');
 							$('#pro-feature-modal').modal('show');
 							return false;
 						});";
-					}
+									}
 
-				?>
+									?>
 				function checkuser()
 				{
 					<?php
-					if(!isset($result['paid']) || $result['paid'] == 0)
-						echo 'return true;';
-						else
-						echo 'return false;';
-					?>
+				if (!isset($result['paid']) || $result['paid'] == 0)
+					echo 'return true;';
+				else
+					echo 'return false;';
+				?>
 				}
-				<?php if(isset($_SESSION['user_id']) && $plays_count >= 5 && $result['paid'] == 0)
-					  {
+				<?php if (isset($_SESSION['user_id']) && $plays_count >= 5 && $result['paid'] == 0) {
 
-							echo "
+				echo "
 							$('#new_play_btn').click(function() {
 								console.log('new_play_btn clicked!');
 
@@ -583,7 +565,7 @@
 								$('#pro-feature-modal').modal('show');
 								return false;
 							 });";
-					 } ?>
+			} ?>
 
 		        stLight.options({
 		        	publisher:'5a1ef2ea-5e37-4530-bada-46b16219791a'
@@ -630,126 +612,126 @@
 
     	<!-- NAVBAR -->
     	<nav class="navbar" role="navigation">
-			<div class="container-fluid">
-		    	<div class="navbar-header">
+				<div class="container-fluid">
+						<div class="navbar-header">
 
-		      	<!-- <a class="btn btn-hc tools-toggle visible-xs-inline-block" data-target="#play-tools" style="padding: 6px;">Tools</a> -->
+							<!-- <a class="btn btn-hc tools-toggle visible-xs-inline-block" data-target="#play-tools" style="padding: 6px;">Tools</a> -->
 
-		      	<div class="navbar-brand-xs visible-xs-block center-block">
-		        	<img class="img-responsive center-block" src="<?= $path ?>basketball-plays-logo5.png" alt="Logo">
-		      	</div>
+							<div class="navbar-brand-xs visible-xs-block center-block">
+								<img class="img-responsive center-block" src="<?= $path ?>basketball-plays-logo5.png" alt="Logo">
+							</div>
 
-		      	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menu-nav" aria-expanded="false" aria-controls="navbar">
-		        	<span class="sr-only">Toggle navigation</span>
-		        	<span class="icon-bar"></span>
-		        	<span class="icon-bar"></span>
-		        	<span class="icon-bar"></span>
-		      	</button>
-		    	</div>
-		    	<div id="menu-nav" class="collapse navbar-collapse">
-		      	<ul class="nav navbar-nav navbar-right">
-		         	<li>
-						<!-- // TODO TODO TODO: UNCOMMENT FOLLOWING LINE BEFORE PUSHING LIVE ******************************************** -->
-						<!-- <a class="nav-link" href="<?= $path ?>basketball-plays.php" target= "_blank" style="color:black;">Plays Library</a> -->
-		            	<a class="nav-link" href="basketball-plays.php" target= "_blank" style="color:black;">Plays Library</a>
-		          	</li>
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menu-nav" aria-expanded="false" aria-controls="navbar">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+						</div>
+						<div id="menu-nav" class="collapse navbar-collapse">
+							<ul class="nav navbar-nav navbar-right">
+								<li>
+							<!-- // TODO TODO TODO: UNCOMMENT FOLLOWING LINE BEFORE PUSHING LIVE ******************************************** -->
+							<!-- <a class="nav-link" href="<?= $path ?>basketball-plays.php" target= "_blank" style="color:black;">Plays Library</a> -->
+										<a class="nav-link" href="basketball-plays.php" target= "_blank" style="color:black;">Plays Library</a>
+									</li>
 
-		          	<li>
-		            	<a class="nav-link" href="https://www.hoopcoach.org/quick-tips-for-using-hoop-coach-playbook/" target= "_blank" style="color:black;">Quick Tips</a>
-		          	</li>
+									<li>
+										<a class="nav-link" href="https://www.hoopcoach.org/quick-tips-for-using-hoop-coach-playbook/" target= "_blank" style="color:black;">Quick Tips</a>
+									</li>
 
-		          	<li>
-		            	<a class="nav-link" href="https://www.hoopcoach.org/hoop-coach-playbook-faqs/" rel="nofollow" style="color:black;">Help</a>
-		          	</li>
+									<li>
+										<a class="nav-link" href="https://www.hoopcoach.org/hoop-coach-playbook-faqs/" rel="nofollow" style="color:black;">Help</a>
+									</li>
 
-		        	<li id="actions" class="dropdown">
-		          		<div class="hidden-xs visible-sm-inline-block visible-md-inline-block visible-lg-inline-block">
-		          			<a class="nav-link" id="menu-dd" data-target="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Menu <span class="caret"></span></a>
-			            	<ul class="dropdown-menu" aria-labelledby="menu-dd">
-				                <li>
-				                  <a href="#" rel="nofollow" class="myplay" data-toggle="modal" data-target="#myplays-modal">My Plays</a>
-				                </li>
-				                <li>
-				                  <a class="more78" href="<?= $path ?>add_student.php">Add Player</a>
-				                </li>
-				                <li>
-				                  <a class="sign78" href="<?= $path ?>player/playbook.php" rel="nofollow">Playbook</a>
-				                </li>
-				                <li>
-				                  <a class="pass78" href="<?= $path ?>coach_set_password.php" rel="nofollow">Playbook Password</a>
-				                </li>
-				                <li>
-				                  <a class="playerList" href="/coach_student_list.php" rel="nofollow">Roster</a>
-				                </li>
-				                <li>
-				                  <a class="loginLog" href="<?= $path ?>coach_student_tracking.php" rel="nofollow">Login Log</a>
-				                </li>
-				                <li>
-				                  <a class="loginLog" href="<?= $path ?>my_affiliates.php" rel="nofollow">My Affiliates</a>
-				                </li>
-				                <li>
-				                  <a href="reset_password.php">Change Password</a>
-				                </li>
-				                <li>
-				                  <a href="<?= $path ?>basketball-plays.php" rel="nofollow" style="color:black;" id="logout_btn">Logout</a>
-				                </li>
-				           	</ul>
-		          		</div>
+								<li id="actions" class="dropdown">
+										<div class="hidden-xs visible-sm-inline-block visible-md-inline-block visible-lg-inline-block">
+											<a class="nav-link" id="menu-dd" data-target="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Menu <span class="caret"></span></a>
+											<ul class="dropdown-menu" aria-labelledby="menu-dd">
+													<li>
+														<a href="#" rel="nofollow" class="myplay" data-toggle="modal" data-target="#myplays-modal">My Plays</a>
+													</li>
+													<li>
+														<a class="more78" href="<?= $path ?>add_student.php">Add Player</a>
+													</li>
+													<li>
+														<a class="sign78" href="<?= $path ?>player/playbook.php" rel="nofollow">Playbook</a>
+													</li>
+													<li>
+														<a class="pass78" href="<?= $path ?>coach_set_password.php" rel="nofollow">Playbook Password</a>
+													</li>
+													<li>
+														<a class="playerList" href="/coach_student_list.php" rel="nofollow">Roster</a>
+													</li>
+													<li>
+														<a class="loginLog" href="<?= $path ?>coach_student_tracking.php" rel="nofollow">Login Log</a>
+													</li>
+													<li>
+														<a class="loginLog" href="<?= $path ?>my_affiliates.php" rel="nofollow">My Affiliates</a>
+													</li>
+													<li>
+														<a href="reset_password.php">Change Password</a>
+													</li>
+													<li>
+														<a href="<?= $path ?>basketball-plays.php" rel="nofollow" style="color:black;" id="logout_btn">Logout</a>
+													</li>
+											</ul>
+										</div>
 
-		          		<div class="visible-xs-block">
-				          	<a class="nav-link" role="button" data-toggle="collapse" href="#collapseMenu" aria-expanded="false" aria-controls="collapseMenu">
-				            	Menu
-				              	<span class='caret'></span>
-			            	</a>
-			            	<ul id="collapseMenu" class="collapse list-unstyled" aria-labelledby="dLabel">
-				              	<li>
-				                  <a href="#" rel="nofollow" class="myplay" data-toggle="modal" data-target="#myplays-modal">My Plays</a>
-				                </li>
-				                <li>
-				                  <a class="more78" href="<?= $path ?>add_student.php">Add Player</a>
-				                </li>
-				                <li>
-				                  <a class="sign78" href="<?= $path ?>player/playbook.php" rel="nofollow">Playbook</a>
-				                </li>
-				                <li>
-				                  <a class="pass78" href="<?= $path ?>coach_set_password.php" rel="nofollow">Playbook Password</a>
-				                </li>
-				                <li>
-				                  <a class="playerList" href="<?= $path ?>coach_student_list.php" rel="nofollow">Roster</a>
-				                </li>
-				                <li>
-				                  <a class="loginLog" href="<?= $path ?>coach_student_tracking.php" rel="nofollow">Login Log</a>
-				                </li>
-				                <li>
-				                  <a class="loginLog" href="<?= $path ?>my_affiliates.php" rel="nofollow">My Affiliates</a>
-				                </li>
-				                <li>
-				                  <a href="reset_password.php">Change Password</a>
-				                </li>
-				                <li>
-			                  		<a href="<?= $path ?>basketball-plays.php" rel="nofollow" style="color:black;" id="logout_btn">Logout</a>
-				                </li>
-				            </ul>
-		          		</div>
+										<div class="visible-xs-block">
+											<a class="nav-link" role="button" data-toggle="collapse" href="#collapseMenu" aria-expanded="false" aria-controls="collapseMenu">
+												Menu
+													<span class='caret'></span>
+											</a>
+											<ul id="collapseMenu" class="collapse list-unstyled" aria-labelledby="dLabel">
+													<li>
+														<a href="#" rel="nofollow" class="myplay" data-toggle="modal" data-target="#myplays-modal">My Plays</a>
+													</li>
+													<li>
+														<a class="more78" href="<?= $path ?>add_student.php">Add Player</a>
+													</li>
+													<li>
+														<a class="sign78" href="<?= $path ?>player/playbook.php" rel="nofollow">Playbook</a>
+													</li>
+													<li>
+														<a class="pass78" href="<?= $path ?>coach_set_password.php" rel="nofollow">Playbook Password</a>
+													</li>
+													<li>
+														<a class="playerList" href="<?= $path ?>coach_student_list.php" rel="nofollow">Roster</a>
+													</li>
+													<li>
+														<a class="loginLog" href="<?= $path ?>coach_student_tracking.php" rel="nofollow">Login Log</a>
+													</li>
+													<li>
+														<a class="loginLog" href="<?= $path ?>my_affiliates.php" rel="nofollow">My Affiliates</a>
+													</li>
+													<li>
+														<a href="reset_password.php">Change Password</a>
+													</li>
+													<li>
+															<a href="<?= $path ?>basketball-plays.php" rel="nofollow" style="color:black;" id="logout_btn">Logout</a>
+													</li>
+											</ul>
+										</div>
 
-		          	</li>
+									</li>
 
-		          <li id="logreglinks-container">
-		            <div id="logreglinks" style="display:inline-block">
-		              <a class="nav-link" href="#" data-toggle="modal" data-target="#login-modal" rel="nofollow" id="log">Login</a>
-		              <span style="color: white">|</span>
-		              <a class="nav-link" href="<?= $path ?>register.php?type=new" rel="nofollow" id="log">Register</a>
-		            </div>
-		          </li>
-		      	</ul>
-		    	</div>
-		  	</div>
-		</nav>
+								<li id="logreglinks-container">
+									<div id="logreglinks" style="display:inline-block">
+										<a class="nav-link" href="#" data-toggle="modal" data-target="#login-modal" rel="nofollow" id="log">Login</a>
+										<span style="color: white">|</span>
+										<a class="nav-link" href="<?= $path ?>register.php?type=new" rel="nofollow" id="log">Register</a>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+			</nav>
 
 		<!-- CONTAINER -->
 		<div class="container">
 
-			<a id="download-hidden" href="" download="<?php echo $name.'.gif' ?>" hidden></a>
+			<a id="download-hidden" href="" download="<?php echo $name . '.gif' ?>" hidden></a>
 
 			<!-- <div id="largedownload"></div> -->
 			<!-- <div id="new_movement_dialog" title="New Movement" style="display:none;">
@@ -764,17 +746,17 @@
             <?php $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>
 			<div id="pdf_warning_dialog" title="Pro Membership Feature" style="display:none;">
 				PDF Printouts are a Pro Feature. <br>
-				<a href="/playbook/premium/index.php?uid=<?=$user_id?>">Click here</a> to upgrade
+				<a href="/playbook/premium/index.php?uid=<?= $user_id ?>">Click here</a> to upgrade
 			</div>
 
 			<div id="record_warning_dialog" title="Pro Membership Feature" style="display:none;">
 				This is for Pro Users <br>
-			  	<a href="/playbook/premium/index.php?uid=<?=$user_id?>">Click here</a> to upgrade
+			  	<a href="/playbook/premium/index.php?uid=<?= $user_id ?>">Click here</a> to upgrade
 			</div>
 
 			<div id="new_play_warning_dialog" title="Pro Membership Feature" style="display:none;">
 				Pro membership needed for creating more than 5 plays. <br>
-				<a href="/playbook/premium/index.php?uid=<?=$user_id?>">Click here</a> to upgrade
+				<a href="/playbook/premium/index.php?uid=<?= $user_id ?>">Click here</a> to upgrade
 			</div>
 			<div id="fb-root"></div>
 
@@ -783,7 +765,7 @@
 				<!-- TODO: UNCOMMENT BELOW BEFORE UPLOADING AND REMOVE HEIGHT: 90PX -->
 				<!-- <div class="col-xs-12 ad_container">
 
-				    <?php if($premium_user == 0) { ?>
+				    <?php if ($premium_user == 0) { ?>
 					    <div class="ad_content center-block">
 							<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 							<ins class="adsbygoogle"
@@ -801,7 +783,8 @@
 							<a class="a2a_button_google_plus"></a>
 
 					    </div>
-				    <?php } ?>
+				    <?php 
+						} ?>
 
 			  	</div> -->
 		  	</div>
@@ -926,11 +909,9 @@
 							          	<tbody>
 
 						                    <?php
-					                   			if(isset($_SESSION['user_id']))
-                                                {
-                                                    foreach ($getAllPlaysResult as $key => $currentPlay)
-                                                    {
-											?>
+																									if (isset($_SESSION['user_id'])) {
+																										foreach ($getAllPlaysResult as $key => $currentPlay) {
+																											?>
 						                    <tr>
 						                    	<td width="50%" style="vertical-align: middle;"><?php echo $currentPlay['name']; ?></td>
 						                      	<td data-play="<?php echo $currentPlay['id']; ?>" data-path="<?php echo $currentPlay['file']; ?>">
@@ -944,7 +925,9 @@
 						                      		<!-- <img src="Model/Img/del.jpg" class="remPlay" onClick="remPlay(this)" /> -->
 						                      	</td>
 						                    </tr>
-						                    <?php } } ?>
+						                    <?php 
+																								}
+																							} ?>
 
 							          	</tbody>
 							        </table>
@@ -971,32 +954,29 @@
 						         <div class="form-group">
 						          	<select id="cat" size="9" class="form-control" required>
 							            <?php
-											$conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
-											$conn->exec("set names utf8");
+																		$conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
+																		$conn->exec("set names utf8");
 
-											$sql = "SELECT * FROM category WHERE ispublic=1";
-											$st = $conn->prepare( $sql );
-											$st->execute();
+																		$sql = "SELECT * FROM category WHERE ispublic=1";
+																		$st = $conn->prepare($sql);
+																		$st->execute();
 
-											$getAllCategoriesInfoQueryResult = array();
-											while ( $row = $st->fetch() )
-										  	{
-										   		$getAllCategoriesInfoQueryResult[] = $row;
-										  	}
+																		$getAllCategoriesInfoQueryResult = array();
+																		while ($row = $st->fetch()) {
+																			$getAllCategoriesInfoQueryResult[] = $row;
+																		}
 
-											foreach ($getAllCategoriesInfoQueryResult as $key => $currentCategoryInfo)
-											{
-												$curr_id = $currentCategoryInfo['id'];
+																		foreach ($getAllCategoriesInfoQueryResult as $key => $currentCategoryInfo) {
+																			$curr_id = $currentCategoryInfo['id'];
 
-												$selected = '';
-												if ($curr_id == 9)
-												{
-													$selected = 'selected';
-												}
-							                    echo "<option value='".$curr_id."' " . $selected . ">" . $currentCategoryInfo['name'] . "</option>";
-											}
+																			$selected = '';
+																			if ($curr_id == 9) {
+																				$selected = 'selected';
+																			}
+																			echo "<option value='" . $curr_id . "' " . $selected . ">" . $currentCategoryInfo['name'] . "</option>";
+																		}
 
-											?>
+																		?>
 							        </select>
 						         </div>
 
@@ -1030,7 +1010,7 @@
 				      </div>
 				      <div class="modal-body" style="text-align: center;">
 				        <p id="pro-body">This is a Pro Feature.</p>
-						<a href="/playbook/premium/index.php?uid=<?=isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''?>" target="_blank" class="btn btn-success text-white">Upgrade Now</a>
+						<a href="/playbook/premium/index.php?uid=<?= isset($_SESSION['user_id']) ? $_SESSION['user_id'] : '' ?>" target="_blank" class="btn btn-success text-white">Upgrade Now</a>
 				      </div>
 				    </div><!-- /.modal-content -->
 				  </div><!-- /.modal-dialog -->
@@ -1052,14 +1032,14 @@
 
 				<div class="col-sm-12">
 					<div class="pay_box" style="margin-top:10px;">
-			          	<?php if(isset($_SESSION['user_id']) && $result['paid']==0): ?>
+			          	<?php if (isset($_SESSION['user_id']) && $result['paid'] == 0) : ?>
 				          <div style="font-weight:bold; font-size:135%; padding-left:5px; color:#0000ff; text-align:center;">Get Playbook Pro!</div>
 				          <div style="text-align:center;">
-				          	<a href="https://hoopcoach.org/playbook/premium/index.php?uid=<?=$_SESSION['user_id']?>"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="center" style="margin-right:7px;"></a>
+				          	<a href="https://hoopcoach.org/playbook/premium/index.php?uid=<?= $_SESSION['user_id'] ?>"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="center" style="margin-right:7px;"></a>
 				          </div>
 				        <?php endif; ?>
 
-				        <?php if(!isset($_SESSION['user_id'])): ?>
+				        <?php if (!isset($_SESSION['user_id'])) : ?>
 				          <div style="font-weight:bold; font-size:135%; padding-left:5px; color:#0000ff; text-align:center;">Get Playbook Pro!</div>
 				          <div style="text-align:center;">
 				          	<a href="https://hoopcoach.org/playbook/register.php?type=new"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="center" style="margin-right:7px;margin-top:-"></a>
@@ -1095,7 +1075,7 @@
 									<tr><td colspan="6"><em>Playbook Tagging for Pro Users</em></td></tr>
 						          	<tr>
 							        	<td style="text-align: left">Tags: <br /><input name="tags" type="text" id="tags" class="form-control" style="width:100px;border-color: gray;"></td>
-							            <td style="text-align: left">Scout: <br /><input name="scout" id="scout" class="form-control" style="width:100px;border-color: gray;" value="<?php if(isset($res['scout']))echo $res['scout'];?>"></td>
+							            <td style="text-align: left">Scout: <br /><input name="scout" id="scout" class="form-control" style="width:100px;border-color: gray;" value="<?php if (isset($res['scout'])) echo $res['scout']; ?>"></td>
 							            <td></td>
 							        </tr>
 					        	</table>
@@ -1263,7 +1243,7 @@
 					              	rename
 					            </li>
 
-					            <?php if(!$is_student): ?>
+					            <?php if (!$is_student) : ?>
 					              	<li class="tool" data-target=".tools">
 						              	<button id="del_move" class="btn btn-default btn-pb btn-lg center-block">
 						              		<span class="glyphicon glyphicon-trash"></span>
@@ -1281,13 +1261,14 @@
 
 								<div class="clearfix visible-xs-block"></div>
 
-								<?php if(isset($_SESSION['user_id']) && $result['paid']==1){?>
+								<?php if (isset($_SESSION['user_id']) && $result['paid'] == 1) { ?>
 					            	<li>
-						                <input name="private" type="checkbox" value="1" id="private" <?php if($priv==1) echo 'checked="checked"'; ?>>
+						                <input name="private" type="checkbox" value="1" id="private" <?php if ($priv == 1) echo 'checked="checked"'; ?>>
 						                <br />
 						                <label style="font-size: 14px;">Set Private</label>
 					            	</li>
-					             <?php } ?>
+					             <?php 
+																} ?>
 
 					            <li>
 				            		<select id="moves" class="form-control center-block">
@@ -1389,11 +1370,11 @@
 				        			</a>
 				        			new
 				        		</li>
-								<?php $disabled = false; if(isset($_SESSION['user_id']) && $plays_count >= 5 && $result['paid'] == 0)
-								{
-									$disabled = true;
-								} ?>
-				        		<?php if(!$is_student): ?>
+								<?php $disabled = false;
+							if (isset($_SESSION['user_id']) && $plays_count >= 5 && $result['paid'] == 0) {
+								$disabled = true;
+							} ?>
+				        		<?php if (!$is_student) : ?>
 				              		<li class="tool" data-target=".tools">
 				                		<button id="save_btn" class="tool btn btn-default btn-pb btn-lg center-block" data-toggle=".tools" <?= $disabled ? 'disabled' : '' ?>>
 					        				<span class="glyphicon glyphicon-floppy-save"></span>
@@ -1402,9 +1383,9 @@
 				            		</li>
 				                <?php endif; ?>
 
-								<?php if(isset($_SESSION['user_id']) && isset($_REQUEST['id'])): ?>
+								<?php if (isset($_SESSION['user_id']) && isset($_REQUEST['id'])) : ?>
 									<li>
-										<a href="#" class="copy_play_btn pro-button tool btn btn-default btn-pb btn-lg center-block" from-id="<?=$_REQUEST['id']?>" to-user="<?=$_SESSION['user_id']?>"><span class="glyphicon glyphicon-duplicate"></span></a>
+										<a href="#" class="copy_play_btn pro-button tool btn btn-default btn-pb btn-lg center-block" from-id="<?= $_REQUEST['id'] ?>" to-user="<?= $_SESSION['user_id'] ?>"><span class="glyphicon glyphicon-duplicate"></span></a>
 										Copy
 									</li>
 					          	<?php endif; ?>
@@ -1426,14 +1407,14 @@
 					        <div class="col-sm-12">
 								<div class="pay_box" style="">
 
-						          	<?php if(isset($_SESSION['user_id']) && $result['paid']==0): ?>
+						          	<?php if (isset($_SESSION['user_id']) && $result['paid'] == 0) : ?>
 							          <div style="font-weight:bold; font-size:135%; padding-left:5px; color:#0000ff; text-align:center;">Get Playbook Pro!</div>
 							          <div style="text-align:center;">
-							          	<a href="/premium/index.php?uid=<?=$_SESSION['user_id']?>"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="center" style="margin-right:7px;"></a>
+							          	<a href="/premium/index.php?uid=<?= $_SESSION['user_id'] ?>"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="center" style="margin-right:7px;"></a>
 							          </div>
 							        <?php endif; ?>
 
-							        <?php if(!isset($_SESSION['user_id'])): ?>
+							        <?php if (!isset($_SESSION['user_id'])) : ?>
 							          <div style="font-weight:bold; font-size:135%; padding-left:5px; color:#0000ff; text-align:center;">Get Playbook Pro!</div>
 							          <div style="text-align:center;">
 							          	<a href="https://hoopcoach.org/playbook/register.php?type=new"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="center" style="margin-right:7px;margin-top:-"></a>
@@ -1451,7 +1432,7 @@
 						            <!-- <td style="font-weight: bold;">Tags:</td> -->
 						            <td style="text-align: left">Tags: <br /><input name="tags" type="text" id="tags-xs" class="form-control" style="width:100px;border-color: gray;"></td>
 						            <!-- <td style="font-weight: bold;"></td> -->
-						            <td style="text-align: left">Scout: <br /><input name="scout" id="scout-xs" class="form-control" style="width:100px; border-color: gray;" value="<?php if(isset($res['scout']))echo $res['scout'];?>"></td>
+						            <td style="text-align: left">Scout: <br /><input name="scout" id="scout-xs" class="form-control" style="width:100px; border-color: gray;" value="<?php if (isset($res['scout'])) echo $res['scout']; ?>"></td>
 						          </tr>
 						        </table>
 					          </div>
@@ -1689,4 +1670,4 @@
 
 	// }
 
- ?>
+?>
