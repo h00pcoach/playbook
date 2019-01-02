@@ -44,7 +44,7 @@ if (isset($_SESSION['user_id']) && isset($_GET['uid'])) {
 </head>
 <body>
   <nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="https://www.hoopcoach.org/playbook/">
       <img class="" src="../pb_logo.png" srcset="../pb_logo@2x.png" alt="Logo" width="auto" height="30">
     </a>
   </nav>
