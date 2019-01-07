@@ -14,7 +14,6 @@ $customer = $gateway->customer()->find($user["pay_id"]);
 $pay_token = $customer->paymentMethods[0]->token;
 
 $result = $gateway->subscription()->update($_POST['subscription_id'], [
-  // 'paymentMethodToken' => $pay_token,
   'paymentMethodNonce' => $_POST['nonce']
 ]);
 
