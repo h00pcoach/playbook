@@ -2,9 +2,7 @@
 require('../mydb_pdo.php');
 require_once(__DIR__ . '/braintree_init.php');
 require_once(__DIR__ . '/user.php');
-require('../ChromePhp.php');
 
-ChromePhp::log('session user_id? ' . $_SESSION['user_id']);
 if (isset($_SESSION['user_id']) && isset($_GET['uid'])) {
   $user_id = $_GET['uid'];
   $user = get_user($user_id);

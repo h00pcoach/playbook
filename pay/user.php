@@ -1,13 +1,5 @@
 <?php
 
-// if (!isset($_GET['uid']) && !isset($_POST['user_id'])) {
-//   header('Location: ../play.php');
-// } else if (isset($_GET['uid'])) {
-//   $user_id = $_GET['uid'];
-// } else {
-//   $user_id = $_POST['user_id'];
-// }
-
 function get_user($user_id)
 {
   // Initialize PDO

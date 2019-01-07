@@ -2,7 +2,6 @@
 require('../mydb_pdo.php');
 require_once(__DIR__ . '/braintree_init.php');
 require_once(__DIR__ . '/user.php');
-require('../ChromePhp.php');
 
 if (!isset($_POST['user_id'])) {
   $data['error'] = 'User Id is required!';
@@ -13,9 +12,6 @@ $user_id = $_POST['user_id'];
 $user = get_user($user_id);
 $customer = $gateway->customer()->find($user["pay_id"]);
 $pay_token = $customer->paymentMethods[0]->token;
-
-ChromePhp::log('customer payment methods? ' . json_encode($customer->paymentMethods));
-ChromePhp::log('pay_token? ' . $pay_token);
 
 $result = $gateway->subscription()->update($_POST['subscription_id'], [
   // 'paymentMethodToken' => $pay_token,

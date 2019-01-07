@@ -46,7 +46,7 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['student_id'])) {
 
 	if ($result['paid'] == 1) {
 		$premium_user = 1;
-		if (isset($result['subscription_id'])) {
+		if (isset($result['subscription_id']) && $result['subscription_id'] != null) {
 			$new_subscriber = true;
 		}
 	}

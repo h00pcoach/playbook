@@ -3,7 +3,7 @@ require('../mydb_pdo.php');
 require_once(__DIR__ . '/braintree_init.php');
 require_once(__DIR__ . '/user.php');
 
-if (!isset($_GET['uid'])) {
+if (!isset($_GET['uid']) || !isset($_SESSION['user_id'])) {
   header('Location: ../play.php');
 }
 
