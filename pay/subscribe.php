@@ -43,7 +43,6 @@ if (isset($_POST['userid'])) {
   $payment_type = $_POST["payment_type"];
 
   // PLAN ID: TEST FAILURE
-  // $plan_id = 'pb_weekly';
   $plan_id = $_POST['planid'];
 
   $pay_token = $customer->paymentMethods[0]->token;
@@ -80,7 +79,7 @@ if (isset($_POST['userid'])) {
   }
 
 } else {
-  // TODO:  Return error don't redirect
+  // Return error don't redirect
   errorJson("User Id is required!");
 }
 
