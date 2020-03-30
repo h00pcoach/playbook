@@ -394,6 +394,34 @@ function nextFrame(node,lst,nxt)
 var playingStill = false;
 var runningPlay = false;
 var pause = true;
+
+/*
+* record audio while running the play
+*
+*/
+
+function startRecordingAudio() {
+	playNow(1, false);
+}
+
+function stopRecordingAudio() {
+
+}
+
+function deleteRecordingAudio() {
+
+}
+
+function playRecordedAudio() {
+	console.log('playing');
+}
+
+/*
+*
+* Run the play animation[s]
+*
+*/
+
 function playNow(lst,nxt)
 {
 	// // console.log('playNow ace! lst: ' + lst + ' nxt: ' + nxt);
@@ -855,11 +883,27 @@ $(document).ready(function(){
 	// PLAY BUTTONS
 	$('#play, .play-court').click(function()
 	{
-		// console.log('play play-court clicked! pause? ', pause);
-		// pause = !pause;
-        //
-		// playNow(1, pause);
 		$('#container').click();
+	});
+
+	$('#recordAudio').click(function()
+	{
+		startRecordingAudio();
+	});
+
+	$('#stopRecordAudio').click(function()
+	{
+		stopRecordingAudio();
+	});
+
+	$('#deleteRecordedAudio').click(function()
+	{
+		deleteRecordedAudio();
+	});
+
+	$('#container').click(function()
+	{
+		playRecordedAudio();
 	});
 
 	// CONTAINER PLAY BUTTON EVENTS
