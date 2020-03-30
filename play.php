@@ -59,7 +59,7 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['student_id'])) {
 		display: none;
 	}
 </style>
-<?php 
+<?php
 }
 if (isset($_GET['id'])) {
 
@@ -530,7 +530,7 @@ if ($name != '') {
 					user.avatarurl = 'Model/Img/female_avatar_icon.png';
 
 			setUser(true);
-			<?php 
+			<?php
 	} ?>
 
 			$('#star, #star-xs').raty({
@@ -564,7 +564,7 @@ if ($name != '') {
 						alert(d);
 					});
 
-					<?php 
+					<?php
 			} ?>
 
 				}
@@ -680,7 +680,7 @@ if ($name != '') {
 					<li>
 						<a class="nav-link" href="https://www.hoopcoach.org/hoop-coach-playbook-faqs/" rel="nofollow" style="color:black;">Help</a>
 					</li>
-					
+
 					<?php if ($new_subscriber == true) : ?>
 						<li>
 							<a class="nav-link" href="../pay/manage.php?uid=<?= $user_id ?>" rel="nofollow" style="color:black;">Manage Subscription</a>
@@ -780,7 +780,7 @@ if ($name != '') {
 	<!-- CONTAINER -->
 	<div class="container">
 
-		<a id="download-hidden" href="" download="<?php echo $name . '.gif' ?>" hidden></a>	
+		<a id="download-hidden" href="" download="<?php echo $name . '.gif' ?>" hidden></a>
 
 		<div id="pdf_warning_dialog" title="Pro Membership Feature" style="display:none;">
 			PDF Printouts are a Pro Feature. <br>
@@ -813,7 +813,7 @@ if ($name != '') {
 					<a class="a2a_button_google_plus"></a>
 
 				</div>
-				<?php 
+				<?php
 		} ?>
 
 			</div>
@@ -959,7 +959,7 @@ if ($name != '') {
 												<!-- <img src="Model/Img/del.jpg" class="remPlay" onClick="remPlay(this)" /> -->
 											</td>
 										</tr>
-										<?php 
+										<?php
 								}
 							} ?>
 
@@ -1165,6 +1165,21 @@ if ($name != '') {
 						</div>
 					</div>
 
+					<div id="recordAudioSection" class="col-xs-12 tools-section">
+						<h2><strong>Record Audio</strong></h2>
+						<button id="recordAudio" class="btn btn-default btn-pb">
+							<span class="glyphicon glyphicon-record"></span>
+						</button>
+						<button id="stopRecordAudio" class="btn btn-default btn-pb">
+							<span class="glyphicon glyphicon-stop"></span>
+						</button>
+						<button id="deleteRecordedAudio" class="btn btn-default btn-pb">
+							<span class="glyphicon glyphicon-remove"></span>
+						</button>
+					</div>
+
+					<div class="clearfix" />
+
 					<!-- COURT OBJECTS -->
 					<div id="court-objects" class="col-xs-12 tools-section">
 						<h2><strong>Court Objects</strong></h2>
@@ -1366,7 +1381,7 @@ if ($name != '') {
 								<br />
 								<label style="font-size: 14px;">Set Private</label>
 							</li>
-							<?php 
+							<?php
 					} ?>
 
 							<li>
