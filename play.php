@@ -1174,7 +1174,7 @@ if ($name != '') {
 							<span class="glyphicon glyphicon-stop"></span>
 						</button>
 						<button id="deleteRecordedAudio" class="btn btn-default btn-pb">
-							<span class="glyphicon glyphicon-remove"></span>
+							<span class="glyphicon glyphicon-trash"></span>
 						</button>
 					</div>
 
