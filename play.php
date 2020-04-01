@@ -269,7 +269,6 @@ if ($name != '') {
 		var switchTo5x = false;
 	</script>
 
-	<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
 	<script type="text/javascript" src="https://ws.sharethis.com/button/buttons.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
@@ -1793,6 +1792,9 @@ if ($name != '') {
 		<!-- End Ezoic - Playbook - native_top -->
 	</div>
 	<br>
+
+	<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+
 </body>
 
 </html>

@@ -8,7 +8,7 @@
 
 URL = window.URL || window.webkitURL;
 var AudioContext = window.AudioContext || window.webkitAudioContext;
-var audioContext = new AudioContext;
+var audioContext;
 var gumStream;
 var rec;
 
@@ -33,10 +33,11 @@ function playRecordedAudio() {
 
 function recordAudio() {
 	navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(function(stream) {
+		audioContext = new AudioContext();
 		gumStream = stream;
-		let input = audioContext.createMediaStreamSource(stream);
-		rec = new Recorder(input, { numChannels: 1 });
-		rec.record();
+		input = audioContext.createMediaStreamSource(stream);
+		rec = new Recorder(input,{numChannels:1});
+		rec.record()
 	});
 }
 
