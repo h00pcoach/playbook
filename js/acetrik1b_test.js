@@ -1,4 +1,67 @@
 /*
+*
+* ------------------------------------
+*
+* Audio Recorders
+*
+*/
+
+URL = window.URL || window.webkitURL;
+var AudioContext = window.AudioContext || window.webkitAudioContext;
+var audioContext = new AudioContext;
+var gumStream;
+var rec;
+
+function startRecordingAudio() {
+	playNow(1, false);
+	recordAudio();
+}
+
+function stopRecordingAudio() {
+	rec.stop();
+	gumStream.getAudioTracks()[0].stop();
+	rec.exportWAV(saveAudio);
+}
+
+function deleteRecordingAudio() {
+
+}
+
+function playRecordedAudio() {
+	console.log('playing');
+}
+
+function recordAudio() {
+	navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(function(stream) {
+		gumStream = stream;
+		let input = audioContext.createMediaStreamSource(stream);
+		rec = new Recorder(input, { numChannels: 1 });
+		rec.record();
+	});
+}
+
+function saveAudio(blob) {
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function(e) {
+      if (this.readyState === 4) {
+          console.log("Server returned: ", e.target.responseText);
+      }
+  };
+	var filename = createUUID();
+	var data = new FormData();
+  data.append("audio_data", blob, filename);
+  xhr.open("POST", "audio_recording.php", true);
+  xhr.send(data);
+}
+
+function createUUID() {
+
+}
+
+/// ---------------------------- ///
+
+
+/*
 Copyright 2013 Acetrik. All rights reserved.
 Visit us at http://www.acetrik.com/
 */
@@ -395,26 +458,6 @@ var playingStill = false;
 var runningPlay = false;
 var pause = true;
 
-/*
-* record audio while running the play
-*
-*/
-
-function startRecordingAudio() {
-	playNow(1, false);
-}
-
-function stopRecordingAudio() {
-
-}
-
-function deleteRecordingAudio() {
-
-}
-
-function playRecordedAudio() {
-	console.log('playing');
-}
 
 /*
 *
