@@ -4,7 +4,7 @@ require_once('mydb_pdo.php');
 
 /*
 *
-* This class handles the management of a plays audio recordings 
+* This class handles the management of a plays audio recordings
 *
 */
 
@@ -34,7 +34,7 @@ class Audio_recording {
 
     }
 
-    // Returns true if the user is a premium user. 
+    // Returns true if the user is a premium user.
     // Otherwise, returns false.
     private function is_premium_user() {
         $stmt = $this->conn->prepare("SELECT paid FROM users WHERE id = :id");
@@ -44,12 +44,19 @@ class Audio_recording {
         return $row === 1;
     }
 
-    // returns true id the user is the creator of the recording. 
+    // returns true id the user is the creator of the recording.
     // Otherwise, returns false.
     private function is_creator() {
 
     }
 
 }
+
+// run the class
+print_r($_FILES);
+$input = $_FILES['audio_data']['tmp_name'];
+$name = basename($_FILES['audio_data']['name'].".wav");
+//move_uploaded_file($input, $output);
+move_uploaded_file($input, "audioRecordings/" . $name);
 
 ?>
