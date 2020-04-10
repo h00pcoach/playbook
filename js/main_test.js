@@ -56,7 +56,9 @@ function loadGame()
         }
     })
     }else{
-        loadElements();filenm='Name';fileid='';$('#userid').val(user.id);$('#id').val('')
+		loadElements();filenm='Name';fileid='';
+		$('#userid').val(user.id);
+		$('#id').val('')
     }
 }
 
@@ -232,51 +234,6 @@ function setUser(f){
 		)
 	}
 
-	// function newDrop()
-	// {
-	// 	////// console.log('drop new object: ', drgg);
-	// 	var c=new Image();
-	// 	c.onload=function(){
-	// 		var g=new Kinetic.Image({
-	// 			x: drgg.x,
-	// 			y: drgg.y,
-	// 			image:c,width:drgg.width,
-	// 			height:drgg.height});
-	// 		////// console.log('newDrop g: ', g);
-
-	// 		grp.push(new Kinetic.Group(
-	// 		{
-	// 			x:drgg.x,
-	// 			y:drgg.y,
-	// 			draggable:true,
-	// 			offset:[drgg.x,drgg.y],
-	// 			id:drgg.id
-	// 		}));
-
-	// 		////// console.log('newDrop grp: ', grp);
-
-	// 		grp[grp.length-1].add(g);
-
-	// 		////// console.log('newDrop grp length: ', grp);
-
-	// 		var n=new Kinetic.Rect({x:drgg.x,y:drgg.y,fill:'black',stroke:'black',strokeWidth:1,width:drgg.width,height:drgg.height,opacity:0});
-	// 		grp[grp.length-1].add(n);
-	// 		addObjects(grp[grp.length-1],drgg.tag)
-	// 	};
-	// 	c.src=drgg.src
-	// }
-
-	// get mouse pos relative to canvas (yours is fine, this is just different)
-// function getMousePos(canvas, evt)
-// {
-// 	//// console.log('getMousePos? canvas: ' + canvas + ' evt: ' + evt);
-//
-//     var rect = canvas.getBoundingClientRect();
-//     return {
-//         x: evt.clientX - rect.left,
-//         y: evt.clientY - rect.top
-//     };
-// }
 	// var dragging
 	function addObjects(x,c,g,n)
 	{
@@ -384,31 +341,6 @@ function setUser(f){
 		layer.drawScene()
 	}
 
-	// function toggleCourtPlay(enabled)
-	// {
-	// 	// console.log('toggleCourtPlay playable? ', enabled);
-    //
-	// 	if (enabled)
-	// 	{
-	// 		usingTool = false;
-    //         $('#main-play').toggleClass('disabled');
-	// 		$('#main-play').attr('disabled', false);
-    //
-	// 	} else {
-    //
-	// 		usingTool = true;
-	// 		// $('#main-play').attr('disabled', true);
-	// 	}
-    //
-	// }
-	// function resetToolUse()
-	// {
-	// 	//// console.log('resetToolUse val before: ', usingTool);
-	// 	usingTool = false;
-	// 	$('#mail-play').attr('disabled', 'disabled');
-	// 	//// console.log('resetToolUse val after: ', usingTool);
-	// }
-
 	function addMovement(movement_name, comment)
 	{
 		// ////// console.log('Add Movement! ', movement_name, comment);
@@ -505,7 +437,7 @@ function setUser(f){
 			var c=location.href.split('\x23')[0].split('\x3f')[1];
 			////// console.log('save_btn clicked c: ', c);
 
-			if(user.id=='')
+			if(typeof user == 'undefined' || user.id=='')
 			{
 				alert("You'll need to register to save this game.");return false
 			}

@@ -11,6 +11,7 @@ var AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext;
 var gumStream;
 var rec;
+var audioBlob;
 
 function startRecordingAudio() {
 	playNow(1, false);
@@ -39,6 +40,10 @@ function recordAudio() {
 		rec = new Recorder(input,{numChannels:1});
 		rec.record()
 	});
+}
+
+function setBlob(blob) {
+	audioBlob = blob;
 }
 
 function saveAudio(blob) {
@@ -115,9 +120,7 @@ function showLoading(show)
 
 function loadGame()
 {
-	// // // console.log('loadGame acetrik!');
 	var nm=location.href.split('?')[1];
-	// // // console.log('nm? ', nm);
 	if(nm){
 		var userid=user.id;
 		if(nm.split('&').length>1){
@@ -166,16 +169,6 @@ function loadGame()
 				showLoading(true);
 				loadElements(true);
 				$('#court').val(halfcourt?1:0);
-				/*if(!halfcourt){
-					$('#container').css({'height':'509px','padding-top':'0px'});
-					stage.setHeight(509);
-					setBackground($('court>imagefull',$skin).text(),509);
-				}
-				else{
-					$('#container').css({'height':'250px','padding-top':'250px'});
-					stage.setHeight(250);
-					setBackground('Model/Frame01.png',250);
-				}*/
 			},
 			error: function(d){
 				alert('Your internet connection is lost or the server encountered an error.');
@@ -608,9 +601,10 @@ function saveG(nameG,old)
 		saving(nameG,old);
 	}
 }
+
+// SAVE THE GAME
 function saving(nameG,old)
 {
-	// // console.log('saving ace: ', nameG, old);
 	var names='';
 	var comm='';
 	for(var i=0;i<moves.length;++i)
@@ -636,26 +630,22 @@ function saving(nameG,old)
 				names:names,
 				comment: comm,
 				tags:tag,
+				audioBlob:audioBlob, 
 				data:{halfcourt:halfcourt, name:filenm,names:names,comment: comm,skin:hash,frames:moves,speed:$('#speed').val()}
 			},
 			dataType:'xml',
 			success: function(d){
 				if($('status',d).text()=='1'){
 					$('#savegame-modal').modal('hide');
-
-					// $('#saveGame').hide('slow');
 					$('#lrg').hide('slow');
 					$('#savename').val('');
 					$('#id').val($('id',d).text());
 					loadScreens(0,$('id',d).text());
 				}
-				//alert($('msg',d).text());
-				//showLoading(true);
 			}
 		});
 	}
 	else{
-
 		$.ajax({
 			type:'POST',
 			url:'save.php',
@@ -667,20 +657,17 @@ function saving(nameG,old)
 				dataType:"xml",
 				comment: comm,
 				tags:tag,
+				audioBlob:audioBlob, 
 				data:{halfcourt:halfcourt,name:nameG,skin:hash,frames:moves,speed:$('#speed').val()}
 			},
 			success: function(d){
 				if($('status',d).text()=='1'){
-					// $('#saveGame').hide('slow');
 					$('#savegame-modal').modal('hide');
-
 					$('#lrg').hide('slow');
 					$('#savename').val('');
 					$('#id').val($('id',d).text());
 					loadScreens(0,$('id',d).text());
 				}
-				//alert($('msg',d).text());
-				//showLoading(true);
 			}
 		});
 	}
@@ -688,7 +675,6 @@ function saving(nameG,old)
 var lastim=1;
 function loadScreens(no,imid)
 {
-	// // console.log('ace loadScreens no: ' + no + ' imid: ' + imid);
 	$('#moves').val(no);
 	loadLayer();
 	setTimeout(function(){

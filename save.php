@@ -22,7 +22,6 @@ if(isset($_POST['data']))
 	$tags = $_POST['tags'];
 	$scout = $_POST['scout'];
 
-
 	// if this is a new play
 	if(!isset($_POST['id']))
 	{
@@ -30,24 +29,11 @@ if(isset($_POST['data']))
 		// unpaid user can have up-to-5 plays
 		$userid = $_SESSION['user_id'];
 
-		// //ChromePhp::log('Save new play for user: ', $userid);
-
-		// $sql = "select * from playdata where userid = :uid";
-		// $r = mysql_query($sql);
-		// $count = mysql_num_rows($r);
-
 		$sql = "SELECT COUNT(*) FROM playdata WHERE userid = :userid";
-
 		$st = $conn->prepare( $sql );
 		$st->bindValue( ":userid", $userid, PDO::PARAM_INT );
 		$st->execute();
 		$count = $st->fetch();
-
-		// $sql = "SELECT FOUND_ROWS() AS totalRows";
-		// $count = $conn->query( $sql )->fetch();
-
-		// //ChromePhp::log('save playdata results? ', $results);
-		// //ChromePhp::log('save playdata count? ', $count);
 
 		if($count[0] >= 100)
 		{
@@ -158,7 +144,10 @@ if(isset($_POST['data']))
 	else {
 		echo '<server><status>0</status><msg>There is an error while saving. Please try again later.'.$err.'</msg></server>';
 	}
+	
 }
+
+
 if(isset($_POST['img']))
 {
 	$img = explode(',',$_POST['img']);
@@ -172,6 +161,7 @@ if(isset($_POST['img']))
 		}
 	}
 }
+
 if(isset($_POST['rate1']))
 {
 	$query = "SELECT upid,downid FROM playdata WHERE id = :id";
@@ -202,6 +192,7 @@ if(isset($_POST['rate1']))
 	$row_cat = $st->execute();
 	echo 'Rated '.$_POST['rate'].'.';
 }
+
 if(isset($_POST['rate']))
 {
 	$query = "SELECT rate,rated,ratecount FROM playdata WHERE id = :id";
@@ -245,6 +236,7 @@ if(isset($_POST['rate']))
 	}
 	echo 'Rated '.$_POST['rate'].'.';
 }
+
 if(isset($_POST['remove']))
 {
 	// //ChromePhp::log('Remove play: ' . $_POST['id'] . ' userid: ' . $_SESSION['user_id']);
@@ -297,5 +289,7 @@ if(isset($_POST['remove']))
 	}
 
 }
+
 $conn = null;
+
 ?>
