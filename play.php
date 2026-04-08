@@ -1110,7 +1110,7 @@ if ($name != '') {
 					<button id="main-play" class="play-court play-court-hide btn btn-large"><span class="glyphicon glyphicon-play"></span></button>
 				</div>
 
-				<div id="container" style="text-align: center;"></div>
+				<div id="container" style="text-align: center; display: flex; justify-content: center;"></div>
 
 				<div class="col-xs-12 hidden-xs">
 					<div class="bot col-sm-12">
