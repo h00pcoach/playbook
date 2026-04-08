@@ -10,6 +10,12 @@ if (isset($_GET['affiliate']) && !empty($_GET['affiliate'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     verify_csrf();
 
+    // Honeypot: bots fill this in, humans leave it blank
+    if (!empty($_POST['website'])) {
+        // Silently reject — don't tell bots why
+        exit;
+    }
+
     include('mydb_pdo.php');
 
     // Initialize PDO
@@ -109,6 +115,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div><input type="password" name="password" id="password" placeholder="Password" class="form-control" required></div>
                         <div><input type="password" name="confirm_password" placeholder="Confirm Password" class="form-control" required></div>
                         <input type="hidden" name="affiliteid" value="<?php echo $affiliate; ?>" />
+                        <!-- Honeypot: hidden from real users, bots fill it in -->
+                        <div style="display:none" aria-hidden="true">
+                            <input type="text" name="website" value="" tabindex="-1" autocomplete="off">
+                        </div>
                         <button class="btn btn-success" type="submit" style="margin-top:20px; width:200px;">Register</button>
                     </form>
                 </div>

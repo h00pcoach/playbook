@@ -22,6 +22,9 @@
 		<a href="manage-plays.php">Manage Plays</a>
 	</li>
 	<li>
+		<a href="junk-plays.php">Clean Up Junk Plays</a>
+	</li>
+	<li>
 		<a href="logout.php">Logout</a>
 	</li>
 </ul>
