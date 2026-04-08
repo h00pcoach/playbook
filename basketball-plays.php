@@ -8,6 +8,7 @@
     /******** GET PLAYS ********/
     $sql = "SELECT playdata.id, playdata.name, playdata.file, category.name AS cat, category.id AS catid,
     playdata.thumbsup, playdata.thumbsdown, playdata.rated, playdata.rate, playdata.ratecount, playdata.comments, playdata.movements, playdata.created_on, users.id AS userid, playdata.id, users.name AS user, playdata.tags FROM playdata JOIN users ON (users.id = playdata.userid) JOIN category ON (category.id = playdata.catid)  WHERE playdata.`private`='0' AND playdata.copied=0
+    AND (CHAR_LENGTH(COALESCE(playdata.movements,'')) - CHAR_LENGTH(REPLACE(COALESCE(playdata.movements,''), CHAR(96), '')) + 1) >= 3
     ";
 
     $app='?';
@@ -160,6 +161,7 @@
     // load random from featured list to display in jubmtron
     $sql = "SELECT playdata.id, playdata.name, playdata.file, category.name AS cat, category.id AS catid,
     playdata.thumbsup, playdata.thumbsdown, playdata.rated, playdata.rate, playdata.ratecount, playdata.comments, playdata.movements, playdata.created_on, users.id AS userid, playdata.id, users.name AS user, playdata.tags FROM playdata JOIN users ON (users.id = playdata.userid) JOIN category ON (category.id = playdata.catid)  WHERE playdata.`private`='0' AND playdata.copied=0
+    AND (CHAR_LENGTH(COALESCE(playdata.movements,'')) - CHAR_LENGTH(REPLACE(COALESCE(playdata.movements,''), CHAR(96), '')) + 1) >= 3
     AND playdata.featured = 1 ORDER BY RAND() LIMIT 1";
 
     $st = $conn->prepare( $sql );
