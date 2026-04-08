@@ -14,10 +14,9 @@ $require_default_name = isset($_GET['default_name']) ? (bool)$_GET['default_name
 // Count backtick-separated movements: "a`b`c" = 3 movements
 // A play with zero movements stored as '' counts as 1 with this formula, so we cap at max_movements
 $movement_expr = "(CHAR_LENGTH(COALESCE(movements,'')) - CHAR_LENGTH(REPLACE(COALESCE(movements,''), '`', '')) + 1)";
-$age_cutoff    = time() - ($min_age_days * 86400);
 
 $where = "WHERE $movement_expr <= :max_movements
-      AND playdata.created_on < :age_cutoff
+      AND playdata.created_on < DATE_SUB(NOW(), INTERVAL :min_age_days DAY)
       AND playdata.thumbsup = 0
       AND playdata.thumbsdown = 0
       AND COALESCE(playdata.copied, 0) = 0";
@@ -38,13 +37,13 @@ $data_sql  = "SELECT playdata.id, playdata.name, playdata.userid, playdata.file,
 
 $stCount = $conn->prepare($count_sql);
 $stCount->bindValue(':max_movements', $max_movements, PDO::PARAM_INT);
-$stCount->bindValue(':age_cutoff',    $age_cutoff,    PDO::PARAM_INT);
+$stCount->bindValue(':min_age_days',  $min_age_days,  PDO::PARAM_INT);
 $stCount->execute();
 $total = $stCount->fetchColumn();
 
 $st = $conn->prepare($data_sql);
 $st->bindValue(':max_movements', $max_movements, PDO::PARAM_INT);
-$st->bindValue(':age_cutoff',    $age_cutoff,    PDO::PARAM_INT);
+$st->bindValue(':min_age_days',  $min_age_days,  PDO::PARAM_INT);
 $st->execute();
 $plays = $st->fetchAll();
 $conn  = null;
