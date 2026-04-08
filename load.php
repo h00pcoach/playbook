@@ -1,7 +1,8 @@
 <?php
 require_once('mydb_pdo.php');
-// require_once('ChromePhp.php');
+require_once('csrf.php');
 session_start();
+verify_csrf();
 if(isset($_REQUEST['id']))
 {
 	$conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );

@@ -14,8 +14,8 @@ if ($url == "hoopcoach.org") {
 	header("Location: https://www.hoopcoach.org$page");
 }
 session_start();
-	// require_once('mydb.php');
 require_once('mydb_pdo.php');
+require_once('csrf.php');
 
 	// Initialize PDO
 $conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
@@ -273,7 +273,8 @@ if ($name != '') {
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
-	<script type="text/javascript" src="js/kinetic-v4.5.5.min.js"></script>
+	<script type="text/javascript" src="js/konva.min.js"></script>
+	<script type="text/javascript">window.Kinetic = Konva;</script>
 	<script type="text/javascript" src="js/jquery.raty.min.js"></script>
 	<!--<script src="http://underscorejs.org/underscore-min.js"></script>-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
@@ -282,6 +283,16 @@ if ($name != '') {
 	<script src="js/gifshot_test.js"></script>
 	<script src="js/acetrik1b_test.js?version=1.3"></script>
 	<script src="js/download.js"></script>
+
+	<script type="text/javascript">
+		// Attach CSRF token to every jQuery AJAX request automatically
+		var _csrfToken = '<?php echo csrf_token(); ?>';
+		$.ajaxSetup({
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader('X-CSRF-Token', _csrfToken);
+			}
+		});
+	</script>
 
 	<script type="text/javascript">
 		var user = {

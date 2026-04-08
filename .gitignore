@@ -1,0 +1,14 @@
+# Environment / credentials — never commit these
+.env
+pay/credentials.php
+
+# Composer vendor directory
+vendor/
+
+# User-uploaded play files
+users/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp

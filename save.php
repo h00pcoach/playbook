@@ -1,10 +1,12 @@
 <?php
 
 	require_once('mydb_pdo.php');
-	//( "ChromePhp.php" );
+	require_once('csrf.php');
 
 session_start();
 if (ob_get_contents()) ob_clean();
+
+verify_csrf();
 
 //ChromePhp::log('SAVE PHP!');
 

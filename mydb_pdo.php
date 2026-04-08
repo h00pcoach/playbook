@@ -1,13 +1,7 @@
 <?php
+require_once __DIR__ . '/env.php';
+load_env(__DIR__ . '/.env');
 
-	// LIVE
-	// define( "DB_DSN", "mysql:host=localhost;dbname=hoopcoac_basketball" );
-	// define( "DB_USERNAME", "hoopcoac_mainus" );
-	// define( "DB_PASSWORD", "@hoopcoach" );
-
-    // LOCAL
-	define( "DB_DSN", "mysql:host=localhost;dbname=hoopcoac_basketball" );
-	define( "DB_USERNAME", "root" );
-	define( "DB_PASSWORD", "rump" );
-
-?>
+define('DB_DSN',      getenv('DB_DSN'));
+define('DB_USERNAME', getenv('DB_USERNAME'));
+define('DB_PASSWORD', getenv('DB_PASSWORD'));

@@ -1,8 +1,8 @@
 <?php
 	session_start();
-	// include 'mydb.php';
 	require('mydb_pdo.php');
-	// require('ChromePhp.php');
+	require_once('csrf.php');
+	verify_csrf();
 
 	include 'config.php';
 
