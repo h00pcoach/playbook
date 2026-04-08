@@ -46,12 +46,11 @@ $stCount->execute();
 $total      = $stCount->fetchColumn();
 $page_count = (int)ceil($total / $per_page);
 
-$data_sql .= " LIMIT :limit OFFSET :offset";
+// Embed limit/offset directly — PDO bound params for LIMIT can fail on some hosts
+$data_sql .= " LIMIT " . (int)$per_page . " OFFSET " . (int)$offset;
 $st = $conn->prepare($data_sql);
 $st->bindValue(':max_movements', $max_movements, PDO::PARAM_INT);
 $st->bindValue(':min_age_days',  $min_age_days,  PDO::PARAM_INT);
-$st->bindValue(':limit',         $per_page,      PDO::PARAM_INT);
-$st->bindValue(':offset',        $offset,        PDO::PARAM_INT);
 $st->execute();
 $plays = $st->fetchAll();
 $conn  = null;
