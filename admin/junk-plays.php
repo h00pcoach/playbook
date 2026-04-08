@@ -128,36 +128,36 @@ $csrf_token  = csrf_token();
         <div class="alert alert-success mt-4">No plays match these criteria.</div>
     <?php else: ?>
 
-    <!-- Play grid -->
+    <!-- Play table -->
     <form id="junk-form">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
-        <div class="row mt-3">
+        <table class="table table-sm table-striped mt-3">
+            <thead class="thead-dark">
+                <tr>
+                    <th style="width:30px"></th>
+                    <th>Name</th>
+                    <th>User</th>
+                    <th>Movements</th>
+                    <th>Created</th>
+                    <th>Private</th>
+                </tr>
+            </thead>
+            <tbody>
             <?php foreach ($plays as $play): ?>
-            <div class="col-6 col-sm-4 col-lg-2 mb-3">
-                <div class="card junk-card" data-id="<?= $play['id'] ?>">
-                    <img src="<?= htmlspecialchars($base_url . 'users/' . $play['userid'] . '/' . $play['file'] . '_1.jpeg') ?>"
-                         alt="play thumbnail" class="card-img-top">
-                    <div class="card-body">
-                        <div class="form-check mb-1">
-                            <input class="form-check-input play-checkbox" type="checkbox"
-                                   name="ids[]" value="<?= $play['id'] ?>" id="cb-<?= $play['id'] ?>">
-                            <label class="form-check-label font-weight-bold" for="cb-<?= $play['id'] ?>">
-                                <?= htmlspecialchars($play['name']) ?>
-                            </label>
-                        </div>
-                        <div class="text-muted">
-                            <?= (int)$play['movement_count'] ?> movement<?= $play['movement_count'] == 1 ? '' : 's' ?><br>
-                            <?= htmlspecialchars($play['user_name']) ?><br>
-                            <?= date('M j, Y', $play['created_on']) ?>
-                            <?php if ($play['private']): ?>
-                                <span class="badge badge-secondary">private</span>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <tr data-id="<?= $play['id'] ?>">
+                <td>
+                    <input class="play-checkbox" type="checkbox"
+                           name="ids[]" value="<?= $play['id'] ?>" id="cb-<?= $play['id'] ?>">
+                </td>
+                <td><label for="cb-<?= $play['id'] ?>"><?= htmlspecialchars($play['name']) ?></label></td>
+                <td><?= htmlspecialchars($play['user_name']) ?></td>
+                <td><?= (int)$play['movement_count'] ?></td>
+                <td><?= date('M j, Y', strtotime($play['created_on'])) ?></td>
+                <td><?= $play['private'] ? 'Yes' : '' ?></td>
+            </tr>
             <?php endforeach; ?>
-        </div>
+            </tbody>
+        </table>
     </form>
 
     <?php endif; ?>
@@ -200,9 +200,9 @@ $csrf_token  = csrf_token();
         var count = selectedIds.size;
         $('#selected-count').text(count + ' selected');
         $('#btn-delete').prop('disabled', count === 0);
-        $('.junk-card').each(function() {
+        $('tr[data-id]').each(function() {
             var id = $(this).data('id').toString();
-            $(this).toggleClass('selected-card', selectedIds.has(id));
+            $(this).toggleClass('table-danger', selectedIds.has(id));
         });
     }
 
@@ -240,7 +240,7 @@ $csrf_token  = csrf_token();
                 $('#delete-status').html('<span class="text-success">Deleted ' + data.deleted + ' play(s).</span>');
                 // Remove deleted cards from the DOM
                 ids.forEach(function(id) {
-                    $('.junk-card[data-id="' + id + '"]').closest('.col-6').remove();
+                    $('tr[data-id="' + id + '"]').remove();
                 });
                 selectedIds.clear();
                 updateUI();
