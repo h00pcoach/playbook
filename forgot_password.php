@@ -12,7 +12,7 @@ require_once('csrf.php');
 function make_reset_token(int $user_id): string {
     $expires  = time() + 3600; // 1 hour
     $payload  = base64_encode($user_id . ':' . $expires);
-    $secret   = getenv('APP_SECRET');
+    $secret   = env('APP_SECRET');
     $sig      = hash_hmac('sha256', $payload, $secret);
     return $payload . '.' . $sig;
 }

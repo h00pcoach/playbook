@@ -1,7 +1,8 @@
 <?php
 /**
  * Minimal .env file loader.
- * Call load_env() once at bootstrap (already called in mydb_pdo.php).
+ * Stores values in $_ENV so they work even when putenv/getenv are
+ * restricted by the host (e.g. GoDaddy shared hosting).
  */
 function load_env(string $path): void {
     if (!file_exists($path)) {
@@ -19,8 +20,12 @@ function load_env(string $path): void {
         if ($name === '') {
             continue;
         }
-        putenv("$name=$value");
-        $_ENV[$name]    = $value;
-        $_SERVER[$name] = $value;
+        $_ENV[$name] = $value;
+        // attempt putenv too, but don't rely on it
+        @putenv("$name=$value");
     }
+}
+
+function env(string $key, string $default = ''): string {
+    return $_ENV[$key] ?? getenv($key) ?: $default;
 }

@@ -12,7 +12,7 @@ function verify_reset_token(string $token): ?int {
     if (count($parts) !== 2) return null;
     [$payload, $sig] = $parts;
 
-    $secret       = getenv('APP_SECRET');
+    $secret       = env('APP_SECRET');
     $expected_sig = hash_hmac('sha256', $payload, $secret);
     if (!hash_equals($expected_sig, $sig)) return null;
 
