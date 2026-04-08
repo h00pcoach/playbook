@@ -13,7 +13,7 @@ $require_default_name = isset($_GET['default_name']) ? (bool)$_GET['default_name
 
 // Count backtick-separated movements: "a`b`c" = 3 movements
 // A play with zero movements stored as '' counts as 1 with this formula, so we cap at max_movements
-$movement_expr = "(CHAR_LENGTH(COALESCE(movements,'')) - CHAR_LENGTH(REPLACE(COALESCE(movements,''), '`', '')) + 1)";
+$movement_expr = "(CHAR_LENGTH(COALESCE(movements,'')) - CHAR_LENGTH(REPLACE(COALESCE(movements,''), CHAR(96), '')) + 1)";
 
 $where = "WHERE $movement_expr <= :max_movements
       AND playdata.created_on < DATE_SUB(NOW(), INTERVAL :min_age_days DAY)
