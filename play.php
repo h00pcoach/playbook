@@ -273,8 +273,7 @@ if ($name != '') {
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
-	<script type="text/javascript" src="js/konva.min.js"></script>
-	<script type="text/javascript">Konva.pixelRatio = 1; window.Kinetic = Konva;</script>
+	<script type="text/javascript" src="js/kinetic-v4.5.5.min.js"></script>
 	<script type="text/javascript" src="js/jquery.raty.min.js"></script>
 	<!--<script src="http://underscorejs.org/underscore-min.js"></script>-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
