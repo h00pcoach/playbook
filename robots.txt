@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /pay/
+Disallow: /users/
+Disallow: /garbage/
+
+Sitemap: https://www.hoopcoach.org/playbook/sitemap.php

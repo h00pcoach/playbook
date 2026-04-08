@@ -37,6 +37,12 @@
 
         $app='?cat='.trim($_REQUEST['cat']).'&';
 
+        // Fetch category name for dynamic title
+        $stCat = $conn->prepare("SELECT name FROM category WHERE id = :id LIMIT 1");
+        $stCat->bindValue(":id", $cat, PDO::PARAM_INT);
+        $stCat->execute();
+        $catRow = $stCat->fetch();
+        $displayTitle = $catRow ? $catRow['name'] : 'Basketball';
     }
     elseif (isset($_REQUEST['tags']) && trim($_REQUEST['tags']) != '')
     {
@@ -224,8 +230,28 @@
         </script>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>Free Basketball Plays created with Basketball Playbook</title>
-        <meta name="description" content="Free Basketball Plays created with Basketball Playbook">
+        <?php
+            $siteTitle = 'HoopCoach Playbook';
+            $cleanDisplay = trim(strip_tags($displayTitle ?? 'Featured'));
+            if ($cleanDisplay === 'Featured') {
+                $pageTitle = "Free Basketball Plays &amp; Drills | $siteTitle";
+                $pageDesc  = "Browse hundreds of free basketball plays and drills created by coaches. Find offense, defense, and special situation plays on HoopCoach Playbook.";
+            } elseif (!empty($search)) {
+                $term      = htmlspecialchars(trim($_REQUEST['search']), ENT_QUOTES, 'UTF-8');
+                $pageTitle = "$term Basketball Plays | $siteTitle";
+                $pageDesc  = "Basketball plays matching &quot;$term&quot;. Browse and copy plays created by coaches on HoopCoach Playbook.";
+            } elseif (!empty($tags)) {
+                $term      = htmlspecialchars(trim($_REQUEST['tags']), ENT_QUOTES, 'UTF-8');
+                $pageTitle = "$term Basketball Plays | $siteTitle";
+                $pageDesc  = "Basketball plays tagged &quot;$term&quot;. Browse and copy plays created by coaches on HoopCoach Playbook.";
+            } else {
+                $pageTitle = "$cleanDisplay Basketball Plays | $siteTitle";
+                $pageDesc  = "Browse $cleanDisplay basketball plays created by coaches. Copy and customize plays for your team on HoopCoach Playbook.";
+            }
+        ?>
+        <title><?= $pageTitle ?></title>
+        <meta name="description" content="<?= $pageDesc ?>">
+        <link rel="canonical" href="https://www.hoopcoach.org/playbook/basketball-plays.php<?= !empty($app) && $app !== '?' ? '?' . ltrim(http_build_query(array_filter(['search' => trim($_REQUEST['search'] ?? ''), 'cat' => $_REQUEST['cat'] ?? '', 'tags' => trim($_REQUEST['tags'] ?? '')])), '&') : '' ?>">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
@@ -371,7 +397,7 @@
                             <?php foreach ($plays as $key => $play) { ?>
                                 <div class="col-sm-6 col-lg-3 mb-4">
                                 <div class="card">
-                                	<img class="card-img-top" src="<?php echo $base_url.'users/'.$play['userid'].'/'.$play['file'].'_1.jpeg'; ?>" alt="Basketball Play <?= $play['name'] . ' ' . $play['cat'] . ' ' . $play['tags'] ?>">
+                                	<img class="card-img-top" loading="lazy" src="<?php echo $base_url.'users/'.$play['userid'].'/'.$play['file'].'_1.jpeg'; ?>" alt="Basketball Play <?= htmlspecialchars($play['name'] . ' ' . $play['cat'] . ' ' . $play['tags']) ?>">
                                 	<div class="card-body">
                                 		<h4 class="card-title"><?= $play['name'] ?></h4>
                                 		<p class="card-text mb-0"><?= $play['cat'] ?></p>

@@ -237,30 +237,39 @@ if (isset($_REQUEST['id'])) {
 }
 ?>
 
-	<!-- page details -->
-	<meta name="keywords" content="basketball,playbook, basketball coach, basketball planner, coaching apps, basketball plays and drills, basketball plays, basketball drills." />
-	<meta name="description" content="Hoop Coach Playbook is a web based tool for basketball coaches that saves time so you can focus on developing your players. Coaching apps and basketball plays and drills." />
-
 	<?php
-$title = ' created on Hoopcoach Playbook';
+$siteName = 'HoopCoach Playbook';
 if ($name != '') {
-	$title = $name . $title;
+    $title    = htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . ' — Basketball Play | ' . $siteName;
+    $tags_str = isset($res['tags']) ? trim($res['tags']) : '';
+    $desc     = 'View the "' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '" basketball play';
+    if ($tags_str) {
+        $desc .= ' (' . htmlspecialchars($tags_str, ENT_QUOTES, 'UTF-8') . ')';
+    }
+    $desc .= '. Created and shared on ' . $siteName . '.';
+} else {
+    $title = 'Draw Basketball Plays Online | ' . $siteName;
+    $desc  = 'HoopCoach Playbook is a free web-based tool for basketball coaches. Draw plays, animate movements, and share with your team.';
+}
+$canonical = 'https://www.hoopcoach.org/playbook/play.php';
+if (isset($_GET['id'])) {
+    $canonical .= '?id=' . (int)$_GET['id'];
 }
 ?>
-	<title>
-		<?= $title ?>
-	</title>
+	<!-- page details -->
+	<title><?= $title ?></title>
+	<meta name="description" content="<?= $desc ?>" />
+	<link rel="canonical" href="<?= $canonical ?>" />
 
 	<!-- social -->
 	<meta property="og:image" content="https://basketballplaybook.org/Model/hoopcoach120.png" />
 	<meta property="twitter:image0:src" content="https://basketballplaybook.org/Model/hoopcoach120.png" />
 	<meta property="og:title" content="<?= $title ?>" />
-	<meta property="og:site_name" content="BasketballPlaybook.org" />
-
-	<meta name="twitter:card" content="gallery">
-	<meta name="twitter:description" content="Up than 200 characters.">
+	<meta property="og:description" content="<?= $desc ?>" />
+	<meta property="og:site_name" content="<?= $siteName ?>" />
+	<meta name="twitter:card" content="summary_large_image">
 	<meta name="twitter:domain" content="BasketballPlaybook.org">
-	<meta name="twitter:description" content="Basketball Playbook is a web based tool for basketball coaches that saves time so you can focus on developing your players. Coaching apps and basketball plays and drills." />
+	<meta name="twitter:description" content="<?= $desc ?>" />
 	<meta name="twitter:title" content="<?= $title ?>" />
 
 
