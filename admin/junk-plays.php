@@ -35,15 +35,23 @@ $data_sql  = "SELECT playdata.id, playdata.name, playdata.userid, playdata.file,
               $where
               ORDER BY playdata.created_on ASC";
 
+$page     = max(1, (int)($_GET['page'] ?? 1));
+$per_page = 48;
+$offset   = ($page - 1) * $per_page;
+
 $stCount = $conn->prepare($count_sql);
 $stCount->bindValue(':max_movements', $max_movements, PDO::PARAM_INT);
 $stCount->bindValue(':min_age_days',  $min_age_days,  PDO::PARAM_INT);
 $stCount->execute();
-$total = $stCount->fetchColumn();
+$total      = $stCount->fetchColumn();
+$page_count = (int)ceil($total / $per_page);
 
+$data_sql .= " LIMIT :limit OFFSET :offset";
 $st = $conn->prepare($data_sql);
 $st->bindValue(':max_movements', $max_movements, PDO::PARAM_INT);
 $st->bindValue(':min_age_days',  $min_age_days,  PDO::PARAM_INT);
+$st->bindValue(':limit',         $per_page,      PDO::PARAM_INT);
+$st->bindValue(':offset',        $offset,        PDO::PARAM_INT);
 $st->execute();
 $plays = $st->fetchAll();
 $conn  = null;
@@ -154,6 +162,34 @@ $csrf_token  = csrf_token();
     </form>
 
     <?php endif; ?>
+
+    <?php if ($page_count > 1): ?>
+    <?php
+        $qs = http_build_query(array_filter([
+            'max_movements' => $max_movements,
+            'min_age_days'  => $min_age_days,
+            'default_name'  => $require_default_name ? 1 : null,
+        ]));
+    ?>
+    <div class="d-flex justify-content-center mt-4 mb-4">
+        <nav>
+            <ul class="pagination">
+                <?php if ($page > 1): ?>
+                    <li class="page-item"><a class="page-link" href="?<?= $qs ?>&page=<?= $page - 1 ?>">&laquo;</a></li>
+                <?php endif; ?>
+                <?php for ($i = max(1, $page - 3); $i <= min($page_count, $page + 3); $i++): ?>
+                    <li class="page-item <?= $i === $page ? 'active' : '' ?>">
+                        <a class="page-link" href="?<?= $qs ?>&page=<?= $i ?>"><?= $i ?></a>
+                    </li>
+                <?php endfor; ?>
+                <?php if ($page < $page_count): ?>
+                    <li class="page-item"><a class="page-link" href="?<?= $qs ?>&page=<?= $page + 1 ?>">&raquo;</a></li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    </div>
+    <?php endif; ?>
+
 </div>
 </main>
 
