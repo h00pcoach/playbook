@@ -25,6 +25,9 @@
 		<a href="junk-plays.php">Clean Up Junk Plays</a>
 	</li>
 	<li>
+		<a href="orphan-files.php">Clean Up Orphan Files</a>
+	</li>
+	<li>
 		<a href="logout.php">Logout</a>
 	</li>
 </ul>
