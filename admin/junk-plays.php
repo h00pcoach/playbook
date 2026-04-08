@@ -113,7 +113,7 @@ $csrf_token  = csrf_token();
     <!-- Sticky action bar -->
     <div id="sticky-bar">
         <div class="d-flex align-items-center">
-            <span class="mr-3"><strong><?= $total ?></strong> junk plays found</span>
+            <span class="mr-3"><strong><?= $total ?></strong> found &mdash; <strong><?= count($plays) ?></strong> loaded this page</span>
             <button id="btn-select-all" class="btn btn-sm btn-outline-secondary mr-2">Select All</button>
             <button id="btn-deselect-all" class="btn btn-sm btn-outline-secondary mr-2">Deselect All</button>
             <span id="selected-count" class="mr-3 text-muted">0 selected</span>
