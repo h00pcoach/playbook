@@ -1526,7 +1526,7 @@ if (isset($_GET['id'])) {
 						<ul class="list-inline" style="text-align: center;">
 							<li>
 								<button id="print_btn" class="tool btn btn-default btn-pb btn-lg center-block" data-target=".tools"
-									onclick="var id=document.getElementById('id').value; if(id) window.open('print.php?id='+id,'_blank'); else alert('Save the play first.');">
+									onclick="<?php if (isset($result['paid']) && $result['paid'] == 1): ?>var id=document.getElementById('id').value; if(id) window.open('print.php?id='+id,'_blank'); else alert('Save the play first.');<?php else: ?>$('#pro-body').html('PDF Printouts are a Pro Feature.'); $('#pro-feature-modal').modal('show');<?php endif; ?>">
 									<span class="glyphicon glyphicon-print"></span>
 								</button>
 								print / pdf

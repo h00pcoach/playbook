@@ -1,8 +1,27 @@
 <?php
 require_once('mydb_pdo.php');
+session_start();
 
 if (!isset($_GET['id'])) {
     header('Location: basketball-plays.php');
+    exit;
+}
+
+// Pro users only
+if (!isset($_SESSION['user_id'])) {
+    header('Location: play.php?id=' . (int)$_GET['id']);
+    exit;
+}
+
+$conn = new PDO(DB_DSN, DB_USERNAME, DB_PASSWORD);
+$conn->exec("set names utf8");
+$stUser = $conn->prepare("SELECT paid FROM users WHERE id = :id LIMIT 1");
+$stUser->bindValue(':id', $_SESSION['user_id'], PDO::PARAM_INT);
+$stUser->execute();
+$user = $stUser->fetch();
+
+if (!$user || $user['paid'] != 1) {
+    header('Location: play.php?id=' . (int)$_GET['id']);
     exit;
 }
 
