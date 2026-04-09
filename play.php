@@ -278,7 +278,7 @@ if (isset($_GET['id'])) {
 		var switchTo5x = false;
 	</script>
 
-	<script type="text/javascript" src="https://ws.sharethis.com/button/buttons.js"></script>
+
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
@@ -1070,6 +1070,39 @@ if (isset($_GET['id'])) {
 				</div><!-- /.modal-dialog -->
 			</div><!-- /.modal -->
 
+			<!-- Share modal -->
+			<div id="share-modal" class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title"><span class="glyphicon glyphicon-share"></span> Share This Play</h4>
+						</div>
+						<div class="modal-body">
+							<p class="text-muted">Anyone with this link can view the play — no account needed.</p>
+							<div class="input-group">
+								<input type="text" id="share-url" class="form-control" readonly
+									value="<?php echo isset($_GET['id']) ? 'https://www.hoopcoach.org/playbook/play.php?id=' . (int)$_GET['id'] : ''; ?>">
+								<span class="input-group-btn">
+									<button id="copy-link-btn" class="btn btn-success" type="button">
+										<span class="glyphicon glyphicon-copy"></span> Copy
+									</button>
+								</span>
+							</div>
+							<small id="copy-success" class="text-success" style="display:none; margin-top:6px;">
+								&#10003; Link copied to clipboard!
+							</small>
+							<hr>
+							<p class="text-muted" style="margin-bottom:6px;">Share on:</p>
+							<a href="https://twitter.com/intent/tweet?url=<?php echo isset($_GET['id']) ? urlencode('https://www.hoopcoach.org/playbook/play.php?id=' . (int)$_GET['id']) : ''; ?>&text=<?php echo urlencode('Check out this basketball play on HoopCoach Playbook!'); ?>"
+								target="_blank" class="btn btn-info btn-sm">Twitter / X</a>
+							<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo isset($_GET['id']) ? urlencode('https://www.hoopcoach.org/playbook/play.php?id=' . (int)$_GET['id']) : ''; ?>"
+								target="_blank" class="btn btn-primary btn-sm">Facebook</a>
+						</div>
+					</div>
+				</div>
+			</div><!-- /.share-modal -->
+
 			<div id="copy-play-modal" class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
@@ -1492,16 +1525,20 @@ if (isset($_GET['id'])) {
 
 						<ul class="list-inline" style="text-align: center;">
 							<li>
-								<form id="pdf_form" target="_blank" action="pdf/reports.php" method="POST">
-									<input type="hidden" id="user_id" class="form-control" name="userid" val="">
-									<input type="hidden" name="id" id="id" class="form-control" val="" value="">
-									<!-- <input type="image" class="form-control" src="img/images/pdf_dwnld.png" id="pdf"> -->
-									<button id="pdf" class="tool btn btn-default btn-pb btn-lg center-block" data-target=".tools">
-										<span class="glyphicon glyphicon-file"></span>
-									</button>
-									download pdf
-								</form>
+								<button id="print_btn" class="tool btn btn-default btn-pb btn-lg center-block" data-target=".tools"
+									onclick="var id=document.getElementById('id').value; if(id) window.open('print.php?id='+id,'_blank'); else alert('Save the play first.');">
+									<span class="glyphicon glyphicon-print"></span>
+								</button>
+								print / pdf
 							</li>
+							<?php if (isset($_GET['id'])): ?>
+							<li>
+								<button id="share_btn" class="tool btn btn-default btn-pb btn-lg center-block" data-toggle="modal" data-target="#share-modal">
+									<span class="glyphicon glyphicon-share"></span>
+								</button>
+								share
+							</li>
+							<?php endif; ?>
 							<li>
 								<a href="play.php" id="new_play_btn" class="pro-button tool btn btn-default btn-pb btn-lg center-block"
 								 data-target=".tools" style="font-size: 18px;" data-type="plays" data-desc="Pro membership needed for creating more than 5 plays.">
@@ -1813,6 +1850,23 @@ if (isset($_GET['id'])) {
 	<br>
 
 	<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+
+	<script>
+		// Copy share link to clipboard
+		document.getElementById('copy-link-btn') && document.getElementById('copy-link-btn').addEventListener('click', function() {
+			var url = document.getElementById('share-url');
+			url.select();
+			url.setSelectionRange(0, 99999);
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard.writeText(url.value).then(function() {
+					document.getElementById('copy-success').style.display = 'block';
+				});
+			} else {
+				document.execCommand('copy');
+				document.getElementById('copy-success').style.display = 'block';
+			}
+		});
+	</script>
 
 </body>
 
